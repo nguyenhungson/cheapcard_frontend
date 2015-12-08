@@ -23,7 +23,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.Proxy;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
@@ -157,10 +156,16 @@ public class Utils {
             content = cacheContent.toString();
         }
         Template template = new Template(content, templateLoader);
-        myDic.setVariable("common_url", staticURL);
+        myDic.setVariable("static_url", staticURL);
         myDic.setVariable("static_version", TGRConfig.timeDeploy);
 
         return template.renderToString(myDic);
+    }
+    
+    public static String renderTemplateMasterpage(String mainContent, TemplateDataDictionary myDic) throws Exception{
+        myDic.setVariable("main_content", mainContent);
+        String masterPage = Utils.renderTemplate("Template/masterpage.html", myDic);
+        return masterPage;
     }
 
     public static String getClientIP(HttpServletRequest req) {

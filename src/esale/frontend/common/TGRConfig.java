@@ -6,7 +6,6 @@ package esale.frontend.common;
 
 import com.vng.jcore.common.Config;
 import esale.frontend.entity.*;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
