@@ -6,8 +6,10 @@
 package esale.frontend.callapi;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import esale.frontend.common.TGRConfig;
 import esale.frontend.common.Utils;
+import java.util.Calendar;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,15 +22,15 @@ public class APISale {
     private static Logger logger = Logger.getLogger(APISale.class);
     private static Gson gson = new Gson();
 
-    public static String getListGame() throws Exception {
-        String url = TGRConfig.gApiInfo.getUrl() + "gamecode_promotion/getGameList";
+    public static JsonObject getListItem() throws Exception {
+        String url = TGRConfig.gApiCheapCard.getUrl() + "getitemlst";
+        String time = String.valueOf(Calendar.getInstance().getTimeInMillis());
+        String sig = Utils.encryptSHA256(time + TGRConfig.secretSplit + TGRConfig.gApiCheapCard.getSecret());
 
-        String paramKey[] = {};
-        String paramValue[] = {};
+        String paramKey[] = {"time", "sig"};
+        String paramValue[] = {time, sig};
 
-        logger.info("getListGame >> URL: " + url);
-        String result = Utils.callAPIRestObject(url, paramKey, paramValue);
-        logger.info(String.format("getListGame End result: %s", result));
+        JsonObject result = Utils.callAPIRestJsonObject(url, paramKey, paramValue);
 
         return result;
     }

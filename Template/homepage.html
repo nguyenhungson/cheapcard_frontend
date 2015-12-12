@@ -1,40 +1,34 @@
 <div class="wrap">
+    {{#MOBILE_CARD}}
     <div class="boxcard clearfix">
         <h2>Mua mã thẻ điện thoại</h2>
         <ul>
-            <li><a href="#"><span class="sprt labeldis"></span><span class="sprt labelpro"></span><span class="sprtcard logocard viettel"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard mobifone"></span></a></li>
-            <li><a href="#"><span class="sprt labelpro"></span><span class="sprtcard logocard vinaphone"></span></a></li>
-            <li><a href="#"><span class="sprt labeldis"></span><span class="sprtcard logocard vietnamobile"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard gmobile"></span></a></li>
+            {{list_mobile_card}}
         </ul>
     </div>
+    {{/MOBILE_CARD}}
+    {{#GAME_CARD}}
     <div class="boxcard clearfix">
         <h2>Mua mã thẻ game</h2>
         <ul>
-            <li><a href="#"><span class="sprtcard logocard zing"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard garena"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard vtc"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard gate"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard ongame"></span></a></li>
-            <li><a href="#"><span class="sprt labeldis"></span><span class="sprtcard logocard mobay"></span></a></li>
+            {{list_game_card}}
         </ul>
     </div>
+    {{/GAME_CARD}}
+    {{#TOPUP_MOBILE}}
     <div class="boxcard clearfix">
         <h2>Nạp tiền điện thoại</h2>
         <ul>
-            <li><a href="#"><span class="sprtcard logocard viettel"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard mobifone"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard vinaphone"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard vietnamobile"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard gmobile"></span></a></li>
-            <li><a href="#"><span class="sprtcard logocard viettel"></span></a></li>
+            {{list_topup_mobile}}
         </ul>
     </div>
+    {{/TOPUP_MOBILE}}
+    {{#TOPUP_GAME}}
     <div class="boxcard clearfix">
         <h2>Nạp tiền game</h2>
         <ul>
-            <li><a href="#"><span class="sprt labeldis"></span><span class="sprtcard logocard zxu"></span></a></li>
+            {{list_topup_game}}
         </ul>
     </div>
+    {{/TOPUP_GAME}}
 </div>

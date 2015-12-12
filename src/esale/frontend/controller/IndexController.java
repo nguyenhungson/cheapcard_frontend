@@ -5,10 +5,18 @@
 package esale.frontend.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import esale.frontend.callapi.APISale;
+import esale.frontend.common.ReturnCode;
+import esale.frontend.common.TGRConfig;
 import esale.frontend.common.Utils;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -56,20 +64,38 @@ public class IndexController extends HttpServlet {
         } else if (req.getParameter("respType") != null && req.getParameter("respType").equals("json")) {
             content = this.actionResultAjax(req);
         } else {
-            content = this.renderHtml(req, pathInfo);
+            content = this.renderHtml();
         }
 
         return content;
     }
 
-    private String renderHtml(HttpServletRequest req, String pathInfo) throws Exception {
-        String mainContent = "";
+    private String renderHtml() throws Exception {
         TemplateDataDictionary myDic = TemplateDictionary.create();
+        Map<Integer,String> mapHTML = this.renderListItem();//1-the game,2-the dien thoai,3-nap tien game,4-nap tien dien thoai
         
-        if(pathInfo.equals("/")){
-            mainContent = Utils.renderTemplate("Template/homepage.html", myDic);
+        if(mapHTML.get(2) != null && !mapHTML.get(2).equals("")){
+            myDic.setVariable("list_mobile_card", mapHTML.get(2));
+            myDic.showSection("MOBILE_CARD");
         }
-
+        
+        if(mapHTML.get(1) != null && !mapHTML.get(1).equals("")){
+            myDic.setVariable("list_game_card", mapHTML.get(1));
+            myDic.showSection("GAME_CARD");
+        }
+        
+        if(mapHTML.get(3) != null && !mapHTML.get(3).equals("")){
+            myDic.setVariable("list_topup_game", mapHTML.get(3));
+            myDic.showSection("TOPUP_GAME");
+        }
+        
+        if(mapHTML.get(4) != null && !mapHTML.get(4).equals("")){
+            myDic.setVariable("list_topup_mobile", mapHTML.get(4));
+            myDic.showSection("TOPUP_MOBILE");
+        }
+        
+        String mainContent = Utils.renderTemplate("Template/homepage.html", myDic);
+        
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
     }
@@ -83,6 +109,25 @@ public class IndexController extends HttpServlet {
         }
 
         return result;
+    }
+    
+    private Map<Integer,String> renderListItem() throws Exception{
+        Map<Integer,String> mapHTML = null;
+        JsonObject jsonList = APISale.getListItem();
+        if(jsonList.get("code").getAsInt() == ReturnCode.SUCCESS){
+            mapHTML = new HashMap<>();
+            JsonArray jsonArr = jsonList.get("data").getAsJsonArray();
+            Iterator it = jsonArr.iterator();
+            while(it.hasNext()){
+                JsonObject itemObj = (JsonObject) it.next();
+                int typeId = itemObj.get("typeId").getAsInt();
+                String curHtml = mapHTML.get(typeId) != null ? mapHTML.get(typeId) : "";
+                curHtml += "<li><a href=\"#\"><span class=\"sprtcard logocard " + itemObj.get("imageFile").getAsString() + "\"></span></a></li>";
+                mapHTML.put(typeId, curHtml);
+            }
+        }
+        
+        return mapHTML;
     }
 
 }

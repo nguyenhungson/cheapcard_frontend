@@ -29,9 +29,9 @@ public class TGRConfig {
     public static String gTopup;
     public static String timeDeploy;
     public static String gGoogleValidateLogin;
+    public static String secretSplit = ",";
     public static Map gGoogleAccount;
-    public static APIEntity gApiInfo;
-    public static APIEntity gAPIWheel;
+    public static APIEntity gApiCheapCard;
     public static SimpleDateFormat gWheelDateFormat;
     
     //permission
@@ -81,17 +81,11 @@ public class TGRConfig {
                 gGoogleAccount.put(arrItem[0], arrItem[1]);
             }
             
-            gApiInfo = new APIEntity();
-            String apiUrl = Config.getParam("api_promotion", "url");
-            String apiSecret = Config.getParam("api_promotion", "secret");
-            gApiInfo.setSecret(apiSecret);
-            gApiInfo.setUrl(apiUrl);
-            
-            gAPIWheel = new APIEntity();
-            String wheelUrl = Config.getParam("wheelapi", "url");
-            String wheelSecret = Config.getParam("wheelapi", "secret");
-            gAPIWheel.setSecret(wheelSecret);
-            gAPIWheel.setUrl(wheelUrl);
+            gApiCheapCard = new APIEntity();
+            String apiUrl = Config.getParam("api_cheapcard", "url");
+            String apiSecret = Config.getParam("api_cheapcard", "secret");
+            gApiCheapCard.setSecret(apiSecret);
+            gApiCheapCard.setUrl(apiUrl);
             
             gWheelDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         }
