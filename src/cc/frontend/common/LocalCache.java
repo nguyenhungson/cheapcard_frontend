@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package esale.frontend.common;
+package cc.frontend.common;
 
 import com.vng.jcore.cache.lruexpire.LruExpireCache;
 import com.vng.jcore.cache.lruexpire.LruExpireCacheManager;

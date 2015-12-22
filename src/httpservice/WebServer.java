@@ -1,7 +1,8 @@
 package httpservice;
 
-import esale.frontend.common.TGRConfig;
-import esale.frontend.controller.IndexController;
+import cc.frontend.common.TGRConfig;
+import cc.frontend.controller.IndexController;
+import cc.frontend.controller.SaleCardController;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -62,7 +63,8 @@ public class WebServer extends Thread {
         handler.setSessionHandler(new SessionHandler());
         server.setHandler(handler);
 
-        handler.addServlet(IndexController.class, "/");
+        handler.addServlet(SaleCardController.class, "/banthe/*");
+        handler.addServlet(IndexController.class, "/*");
 
         server.setStopAtShutdown(true);
         server.setSendServerVersion(true);

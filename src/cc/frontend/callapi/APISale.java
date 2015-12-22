@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package esale.frontend.callapi;
+package cc.frontend.callapi;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import esale.frontend.common.TGRConfig;
-import esale.frontend.common.Utils;
+import cc.frontend.common.TGRConfig;
+import cc.frontend.common.Utils;
 import java.util.Calendar;
 import org.apache.log4j.Logger;
 
@@ -22,15 +22,15 @@ public class APISale {
     private static Logger logger = Logger.getLogger(APISale.class);
     private static Gson gson = new Gson();
 
-    public static JsonObject getListItem() throws Exception {
+    public static String getListItem() throws Exception {
         String url = TGRConfig.gApiCheapCard.getUrl() + "getitemlst";
         String time = String.valueOf(Calendar.getInstance().getTimeInMillis());
-        String sig = Utils.encryptSHA256(time + TGRConfig.secretSplit + TGRConfig.gApiCheapCard.getSecret());
+        String sig = Utils.encryptSHA256(time + TGRConfig.secretSplit + "0" + TGRConfig.secretSplit + TGRConfig.gApiCheapCard.getSecret());
 
-        String paramKey[] = {"time", "sig"};
-        String paramValue[] = {time, sig};
+        String paramKey[] = {"time", "type", "sig"};
+        String paramValue[] = {time, "0", sig};
 
-        JsonObject result = Utils.callAPIRestJsonObject(url, paramKey, paramValue);
+        String result = Utils.callAPIRestObject(url, paramKey, paramValue);
 
         return result;
     }

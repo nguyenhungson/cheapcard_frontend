@@ -6,7 +6,7 @@ package main;
 
 import com.vng.jcore.common.Config;
 import com.vng.jcore.common.LogUtil;
-import esale.frontend.common.TGRConfig;
+import cc.frontend.common.TGRConfig;
 import httpservice.WebServer;
 import java.io.File;
 import org.apache.log4j.Logger;

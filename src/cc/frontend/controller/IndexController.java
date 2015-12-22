@@ -2,15 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package esale.frontend.controller;
+package cc.frontend.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import esale.frontend.callapi.APISale;
-import esale.frontend.common.ReturnCode;
-import esale.frontend.common.TGRConfig;
-import esale.frontend.common.Utils;
+import cc.frontend.common.BusinessProcess;
+import cc.frontend.common.Utils;
+import cc.frontend.entity.Item;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
@@ -112,22 +109,29 @@ public class IndexController extends HttpServlet {
     }
     
     private Map<Integer,String> renderListItem() throws Exception{
-        Map<Integer,String> mapHTML = null;
-        JsonObject jsonList = APISale.getListItem();
-        if(jsonList.get("code").getAsInt() == ReturnCode.SUCCESS){
-            mapHTML = new HashMap<>();
-            JsonArray jsonArr = jsonList.get("data").getAsJsonArray();
-            Iterator it = jsonArr.iterator();
+        Map<Integer,Item> mapItem = BusinessProcess.getListItem();
+        Map<Integer,String> mapHtml = null; 
+        if(mapItem != null){
+            mapHtml = new HashMap<>();
+            Iterator it = mapItem.entrySet().iterator();
             while(it.hasNext()){
-                JsonObject itemObj = (JsonObject) it.next();
-                int typeId = itemObj.get("typeId").getAsInt();
-                String curHtml = mapHTML.get(typeId) != null ? mapHTML.get(typeId) : "";
-                curHtml += "<li><a href=\"#\"><span class=\"sprtcard logocard " + itemObj.get("imageFile").getAsString() + "\"></span></a></li>";
-                mapHTML.put(typeId, curHtml);
+                Map.Entry<Integer,Item> pair = (Map.Entry) it.next();
+                int typeId = pair.getValue().getTypeId();
+                String curHtml = mapHtml.get(typeId) != null ? mapHtml.get(typeId) : "";
+                String urlSale = "";
+                String supplier = pair.getValue().getSupplier();
+                if(typeId == 1 || typeId == 2){
+                    urlSale = "/banthe/" + supplier;
+                }
+                else if(typeId == 3){
+                    urlSale = "/naptiengame/" + supplier;
+                }
+                curHtml += "<li><a href=\"" + urlSale + "\"><span class=\"sprtcard logocard " + pair.getValue().getSupplier() + "\"></span></a></li>";
+                mapHtml.put(typeId, curHtml);
             }
         }
         
-        return mapHTML;
+        return mapHtml;
     }
 
 }

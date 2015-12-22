@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package esale.frontend.common;
+package cc.frontend.common;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

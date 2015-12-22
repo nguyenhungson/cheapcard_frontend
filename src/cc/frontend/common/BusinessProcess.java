@@ -2,11 +2,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package esale.frontend.common;
+package cc.frontend.common;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import cc.frontend.callapi.APISale;
+import cc.frontend.entity.Item;
+import cc.frontend.entity.ResponseAPI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
@@ -68,6 +75,19 @@ public class BusinessProcess {
         }*/
         
         return 0;
+    }
+    
+    public static Map<Integer,Item> getListItem() throws Exception{
+        ResponseAPI response = new Gson().fromJson(APISale.getListItem(), ResponseAPI.class);
+        Map<Integer, Item> mapItem = null;
+        if(response.getCode() == 1){
+            mapItem = new HashMap<>();
+            List<Item> listItem = (List<Item>) response.getData();
+            for(Item item : listItem){
+                mapItem.put(item.getId(), item);
+            }
+        }
+        return mapItem;
     }
 
 }

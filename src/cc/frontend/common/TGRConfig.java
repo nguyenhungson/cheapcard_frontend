@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package esale.frontend.common;
+package cc.frontend.common;
 
 import com.vng.jcore.common.Config;
-import esale.frontend.entity.*;
+import cc.frontend.entity.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
