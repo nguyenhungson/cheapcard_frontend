@@ -2,6 +2,7 @@ package httpservice;
 
 import cc.frontend.common.TGRConfig;
 import cc.frontend.controller.IndexController;
+import cc.frontend.controller.PaymentController;
 import cc.frontend.controller.SaleCardController;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Connector;
@@ -64,6 +65,7 @@ public class WebServer extends Thread {
         server.setHandler(handler);
 
         handler.addServlet(SaleCardController.class, "/banthe/*");
+        handler.addServlet(PaymentController.class, "/thanhtoan/*");
         handler.addServlet(IndexController.class, "/*");
 
         server.setStopAtShutdown(true);

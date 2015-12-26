@@ -25,9 +25,9 @@ import org.apache.log4j.Logger;
  *
  * @author sonnh4
  */
-public class SaleCardController extends HttpServlet {
+public class PaymentController extends HttpServlet {
 
-    private static Logger logger = Logger.getLogger(SaleCardController.class);
+    private static Logger logger = Logger.getLogger(PaymentController.class);
     private Gson gson = new Gson();
 
     @Override
@@ -55,11 +55,8 @@ public class SaleCardController extends HttpServlet {
     }
 
     private String renderHtml(HttpServletRequest req) throws Exception {
-        String pathInfo = req.getPathInfo() != null ? req.getPathInfo() : "";
         TemplateDataDictionary myDic = TemplateDictionary.create();
-        myDic.setVariable("card_name", WordUtils.capitalize(pathInfo.substring(1)));
-        myDic.setVariable("list_card", this.renderListItem(pathInfo));
-        String mainContent = Utils.renderTemplate("Template/salecard.html", myDic);
+        String mainContent = Utils.renderTemplate("Template/payment.html", myDic);
 
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
@@ -68,26 +65,10 @@ public class SaleCardController extends HttpServlet {
     private String renderPost(HttpServletRequest req) throws Exception {
         String result = "";
 
-        String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
-        if (pathInfo.equals("/choose_card")) {
-            String listCard[] = req.getParameter("listCard").split(",");
-            String param = "";
-            for (int i = 0; i < listCard.length; i++) {
-                if (!listCard[i].equals("")) {
-                    String arrItem[] = listCard[i].split("-");
-                    if (!arrItem[1].equals("0")) {
-                        param = String.format("%s=%s&%s=%s&", "id" + i, arrItem[0], "q" + i, arrItem[1]);
-                    }
-                }
-            }
-            String sig = Utils.encryptMD5(param + "|" + TGRConfig.gApiCheapCard.getSecret());
-            result = "/thanhtoan/banthe?" + param + "sig=" + sig;
-        }
-
         return result;
     }
 
-    private String renderListItem(String pathInfo) throws Exception {
+    /*private String renderListItem(String pathInfo) throws Exception {
         Map<Integer, Item> mapItem = BusinessProcess.getListItem();
         String html = "";
         if (mapItem != null) {
@@ -111,6 +92,6 @@ public class SaleCardController extends HttpServlet {
         }
 
         return html;
-    }
+    }*/
 
 }
