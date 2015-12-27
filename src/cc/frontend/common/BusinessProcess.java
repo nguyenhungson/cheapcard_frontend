@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import cc.frontend.callapi.APISale;
 import cc.frontend.entity.Item;
-import cc.frontend.entity.ResponseAPI;
+import cc.frontend.entity.ResponseItem;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class BusinessProcess {
     }
     
     public static Map<Integer,Item> getListItem() throws Exception{
-        ResponseAPI response = new Gson().fromJson(APISale.getListItem(), ResponseAPI.class);
+        ResponseItem response = new Gson().fromJson(APISale.getListItem(), ResponseItem.class);
         Map<Integer, Item> mapItem = null;
         if(response.getCode() == 1){
             mapItem = new HashMap<>();

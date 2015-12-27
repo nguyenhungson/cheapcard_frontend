@@ -4,21 +4,20 @@
  */
 package cc.frontend.controller;
 
+import cc.frontend.callapi.APISale;
 import com.google.gson.Gson;
-import cc.frontend.common.BusinessProcess;
-import cc.frontend.common.TGRConfig;
 import cc.frontend.common.Utils;
-import cc.frontend.entity.Item;
+import cc.frontend.entity.Bank;
+import cc.frontend.entity.ResponseBank;
+import cc.frontend.entity.ResponseItem;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -56,6 +55,11 @@ public class PaymentController extends HttpServlet {
 
     private String renderHtml(HttpServletRequest req) throws Exception {
         TemplateDataDictionary myDic = TemplateDictionary.create();
+        if(req.getParameter("t") != null){
+            String totalAmount = Utils.formatNumber(Integer.parseInt(req.getParameter("t")));
+            myDic.setVariable("total_amount", totalAmount);
+        }
+        myDic.setVariable("list_bank", this.getListBank());
         String mainContent = Utils.renderTemplate("Template/payment.html", myDic);
 
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
@@ -66,6 +70,20 @@ public class PaymentController extends HttpServlet {
         String result = "";
 
         return result;
+    }
+    
+    private String getListBank() throws Exception{
+        ResponseBank response = new Gson().fromJson(APISale.getListBank(), ResponseBank.class);
+        String html = "";
+        
+        if(response.getCode() == 1){
+            List<Bank> listBank = (List<Bank>) response.getData();
+            for(Bank item : listBank){
+                html += "<li onclick=\"chooseBank(this);\"><a href=\"javascript:;\"><span class=\"sprtbank logobank " + item.getImageFile() + "\"></span></a></li>";
+            }
+        }
+        
+        return html;
     }
 
     /*private String renderListItem(String pathInfo) throws Exception {

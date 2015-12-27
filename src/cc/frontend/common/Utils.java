@@ -167,6 +167,11 @@ public class Utils {
         String masterPage = Utils.renderTemplate("Template/masterpage.html", myDic);
         return masterPage;
     }
+    
+    public static String render404Page(TemplateDataDictionary myDic) throws Exception{
+        String masterPage = Utils.renderTemplate("Template/404.html", myDic);
+        return masterPage;
+    }
 
     public static String getClientIP(HttpServletRequest req) {
         String ipAddress = req.getHeader("X-FORWARDED-FOR");

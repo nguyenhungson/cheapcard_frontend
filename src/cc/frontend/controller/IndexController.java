@@ -111,6 +111,7 @@ public class IndexController extends HttpServlet {
     private Map<Integer,String> renderListItem() throws Exception{
         Map<Integer,Item> mapItem = BusinessProcess.getListItem();
         Map<Integer,String> mapHtml = null; 
+        Map<String,Integer> mapSupplier = new HashMap<>();
         if(mapItem != null){
             mapHtml = new HashMap<>();
             Iterator it = mapItem.entrySet().iterator();
@@ -120,14 +121,17 @@ public class IndexController extends HttpServlet {
                 String curHtml = mapHtml.get(typeId) != null ? mapHtml.get(typeId) : "";
                 String urlSale = "";
                 String supplier = pair.getValue().getSupplier();
-                if(typeId == 1 || typeId == 2){
-                    urlSale = "/banthe/" + supplier;
+                if(mapSupplier.get(supplier) == null){
+                    if(typeId == 1 || typeId == 2){
+                        urlSale = "/banthe/" + supplier;
+                    }
+                    else if(typeId == 3){
+                        urlSale = "/naptiengame/" + supplier;
+                    }
+                    curHtml += "<li><a href=\"" + urlSale + "\"><span class=\"sprtcard logocard " + pair.getValue().getSupplier() + "\"></span></a></li>";
+                    mapHtml.put(typeId, curHtml);
+                    mapSupplier.put(supplier, 1);
                 }
-                else if(typeId == 3){
-                    urlSale = "/naptiengame/" + supplier;
-                }
-                curHtml += "<li><a href=\"" + urlSale + "\"><span class=\"sprtcard logocard " + pair.getValue().getSupplier() + "\"></span></a></li>";
-                mapHtml.put(typeId, curHtml);
             }
         }
         

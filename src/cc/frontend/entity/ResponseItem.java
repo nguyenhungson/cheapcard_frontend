@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author viettd
  */
-public class ResponseAPI {
+public class ResponseItem {
 
     private int code;
     private String msg;

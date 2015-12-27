@@ -12,6 +12,7 @@ import cc.frontend.entity.Item;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -70,18 +71,23 @@ public class SaleCardController extends HttpServlet {
 
         String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
         if (pathInfo.equals("/choose_card")) {
+            Map<Integer, Item> mapItem = BusinessProcess.getListItem();
             String listCard[] = req.getParameter("listCard").split(",");
+            int totalAmount = 0;
             String param = "";
             for (int i = 0; i < listCard.length; i++) {
                 if (!listCard[i].equals("")) {
                     String arrItem[] = listCard[i].split("-");
                     if (!arrItem[1].equals("0")) {
-                        param = String.format("%s=%s&%s=%s&", "id" + i, arrItem[0], "q" + i, arrItem[1]);
+                        int itemId = Integer.parseInt(arrItem[0]);
+                        int quantity = Integer.parseInt(arrItem[1]);
+                        totalAmount += (mapItem.get(itemId).getUnitPrice() * ((100 - mapItem.get(itemId).getDiscountPercent()) / 100) * quantity);
+                        param += String.format("%s=%s&%s=%s&", "id" + i, itemId, "q" + i, arrItem[1]);
                     }
                 }
             }
-            String sig = Utils.encryptMD5(param + "|" + TGRConfig.gApiCheapCard.getSecret());
-            result = "/thanhtoan/banthe?" + param + "sig=" + sig;
+            String sig = Utils.encryptMD5(param + "|" + totalAmount + "|" + TGRConfig.gApiCheapCard.getSecret());
+            result = "/thanhtoan/banthe?" + param + "t=" + totalAmount + "&sig=" + sig;
         }
 
         return result;
