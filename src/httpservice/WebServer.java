@@ -4,6 +4,7 @@ import cc.frontend.common.TGRConfig;
 import cc.frontend.controller.IndexController;
 import cc.frontend.controller.PaymentController;
 import cc.frontend.controller.SaleCardController;
+import cc.frontend.controller.TopupGameController;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -66,6 +67,7 @@ public class WebServer extends Thread {
 
         handler.addServlet(SaleCardController.class, "/banthe/*");
         handler.addServlet(PaymentController.class, "/thanhtoan/*");
+        handler.addServlet(TopupGameController.class, "/naptiengame/*");
         handler.addServlet(IndexController.class, "/*");
 
         server.setStopAtShutdown(true);

@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import cc.frontend.common.Utils;
 import cc.frontend.entity.Bank;
 import cc.frontend.entity.ResponseBank;
-import cc.frontend.entity.ResponseItem;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
@@ -54,16 +53,36 @@ public class PaymentController extends HttpServlet {
     }
 
     private String renderHtml(HttpServletRequest req) throws Exception {
+        String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
         TemplateDataDictionary myDic = TemplateDictionary.create();
-        if(req.getParameter("t") != null){
-            String totalAmount = Utils.formatNumber(Integer.parseInt(req.getParameter("t")));
-            myDic.setVariable("total_amount", totalAmount);
+        String mainContent = "";
+        if(pathInfo.equals("/banthe")){
+            if(req.getParameter("t") != null){
+                String totalAmount = Utils.formatNumber(Integer.parseInt(req.getParameter("t")));
+                myDic.setVariable("total_amount", totalAmount);
+            }
+            myDic.setVariable("list_bank", this.getListBank());
+            mainContent = Utils.renderTemplate("Template/payment.html", myDic);
         }
-        myDic.setVariable("list_bank", this.getListBank());
-        String mainContent = Utils.renderTemplate("Template/payment.html", myDic);
+        else if(pathInfo.equals("/hoanthanh")){
+            mainContent = Utils.renderTemplate("Template/payment_finish.html", myDic);
+        }
+        else{
+            mainContent = Utils.render404Page(myDic);
+        }
 
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
+    }
+    
+    private int checkURL(HttpServletRequest req, String pathInfo){
+        int result = 0;
+        if(pathInfo.equals("/banthe")){
+            String params = "";
+            
+        }
+        
+        return result;
     }
 
     private String renderPost(HttpServletRequest req) throws Exception {
