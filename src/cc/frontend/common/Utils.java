@@ -4,6 +4,7 @@
  */
 package cc.frontend.common;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -40,10 +41,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 
@@ -435,6 +439,31 @@ public class Utils {
         }
 
         return null;
+    }
+    
+    public static String callAPIRestObject(String url, Object req) throws Exception{
+        String result = "";
+        
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(90000)
+                .setConnectTimeout(90000)
+                .build();
+        CloseableHttpClient httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Content-Type", "application/json;charset=UTF-8");
+        httpPost.setHeader("Charset", "UTF-8");
+        
+        httpPost.setEntity(new StringEntity(new Gson().toJson(req)));
+        try (CloseableHttpResponse res = httpclient.execute(httpPost)) {
+            int statusCode = res.getStatusLine().getStatusCode();
+            if (statusCode == HttpStatus.SC_OK) {
+                HttpEntity entity = res.getEntity();
+                InputStream inputStream = entity.getContent();
+                result = IOUtils.toString(inputStream, "UTF-8");
+            }
+        }
+        
+        return result;
     }
 
     public static JsonObject convertStringToJsonObject(String data) {

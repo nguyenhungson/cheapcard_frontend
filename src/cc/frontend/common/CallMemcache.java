@@ -40,7 +40,7 @@ public class CallMemcache
     }
     
     public CallMemcache() throws Exception{
-        memcache = new MemcachedClient(new InetSocketAddress(TGRConfig.gMemcache.getHost(), Integer.parseInt(TGRConfig.gMemcache.getPort())));
+        //memcache = new MemcachedClient(new InetSocketAddress(TGRConfig.gMemcache.getHost(), Integer.parseInt(TGRConfig.gMemcache.getPort())));
     }
     
     public void setCache(String key, Object value, int timeExpire){

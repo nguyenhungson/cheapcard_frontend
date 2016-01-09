@@ -8,11 +8,16 @@ import cc.frontend.callapi.APISale;
 import com.google.gson.Gson;
 import cc.frontend.common.Utils;
 import cc.frontend.entity.Bank;
+import cc.frontend.entity.OrderCreateResp;
+import cc.frontend.entity.OrderDetail;
 import cc.frontend.entity.ResponseBank;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -56,79 +61,105 @@ public class PaymentController extends HttpServlet {
         String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
         TemplateDataDictionary myDic = TemplateDictionary.create();
         String mainContent = "";
-        if(pathInfo.equals("/banthe")){
-            if(req.getParameter("t") != null){
+        if (pathInfo.equals("/banthe") || pathInfo.equals("/naptiengame")) {
+            if (req.getParameter("t") != null) {
                 String totalAmount = Utils.formatNumber(Integer.parseInt(req.getParameter("t")));
                 myDic.setVariable("total_amount", totalAmount);
             }
-            myDic.setVariable("list_bank", this.getListBank());
+            myDic.setVariable("list_bank", this.renderListBank());
             mainContent = Utils.renderTemplate("Template/payment.html", myDic);
-        }
-        else if(pathInfo.equals("/hoanthanh")){
+        } else if (pathInfo.equals("/hoanthanh")) {
             mainContent = Utils.renderTemplate("Template/payment_finish.html", myDic);
-        }
-        else{
+        } else {
             mainContent = Utils.render404Page(myDic);
         }
 
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
     }
-    
-    private int checkURL(HttpServletRequest req, String pathInfo){
-        int result = 0;
-        if(pathInfo.equals("/banthe")){
+
+    private int checkURL(HttpServletRequest req, String pathInfo) {
+        int result = 1;
+        if (pathInfo.equals("/banthe")) {
             String params = "";
-            
+
         }
-        
+
         return result;
     }
 
     private String renderPost(HttpServletRequest req) throws Exception {
         String result = "";
 
-        return result;
-    }
-    
-    private String getListBank() throws Exception{
-        ResponseBank response = new Gson().fromJson(APISale.getListBank(), ResponseBank.class);
-        String html = "";
-        
-        if(response.getCode() == 1){
-            List<Bank> listBank = (List<Bank>) response.getData();
-            for(Bank item : listBank){
-                html += "<li onclick=\"chooseBank(this);\"><a href=\"javascript:;\"><span class=\"sprtbank logobank " + item.getImageFile() + "\"></span></a></li>";
-            }
-        }
-        
-        return html;
-    }
-
-    /*private String renderListItem(String pathInfo) throws Exception {
-        Map<Integer, Item> mapItem = BusinessProcess.getListItem();
-        String html = "";
-        if (mapItem != null) {
-            Iterator it = mapItem.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
-                String cardType = pathInfo.substring(1);
-                if (cardType.equals(pair.getValue().getSupplier())) {
-                    html += "<tr>"
-                            + "<td class=\"boxcard\">"
-                            + "<input type=\"hidden\" value=\"" + pair.getValue().getId() + "\" />"
-                            + "<a class=\"imgcard\" href=\"javascript:;\" onclick=\"chooseCard(this, 1, 0);\"><img src=\"" + TGRConfig.gStaticURL + "/images/cards/" + pair.getValue().getImageFile() + ".jpg\" alt=\"\"> </a>"
-                            + "</td>"
-                            + "<td class=\"coldecrease\"><a href=\"javascript:;\" onclick=\"decreaseQuantity(this);\"><span class=\"sprt icodecrease\"></span></a></td>"
-                            + "<td class=\"colinput\"><input type=\"text\" value=\"0\" placeholder=\"0\" maxlength=\"3\" onblur=\"chooseCard(this, 0, 0);\"></td>"
-                            + "<td class=\"colincrease\"><a href=\"javascript:;\" onclick=\"increaseQuantity(this);\"><span class=\"sprt icoincrease\"></span></a></td>"
-                            + "<td class=\"colmoney\"><label>0</label> <span>VNĐ</span><input type=\"hidden\" value=\"" + pair.getValue().getUnitPrice() * ((100 - pair.getValue().getDiscountPercent()) / 100) + "\"></td>"
-                            + "</tr>";
+        String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
+        if (pathInfo.equals("/accept_payment")) {
+            String data = req.getParameter("data");
+            String bankName = req.getParameter("bank");
+            String arrParam[] = data.split("\\?|\\&");
+            Map mapData = new HashMap();
+            for (String item : arrParam) {
+                if(!item.equals("")){
+                    String arrItem[] = item.split("=");
+                    mapData.put(arrItem[0], arrItem[1]);
                 }
             }
+
+            int bankId = 0;
+            String bankCode = "";
+            long totalAmount = Long.parseLong(mapData.get("t").toString());
+            String buyer = "";
+            List<OrderDetail> listDetail = new ArrayList<OrderDetail>();
+            String ip = Utils.getClientIP(req);
+
+            List<Bank> listBank = this.getListBank();
+            for (Bank item : listBank) {
+                if (item.getBankName().equals(bankName)) {
+                    bankId = item.getId();
+                    bankCode = item.getBankCode();
+                    break;
+                }
+            }
+
+            if (mapData.get("acc") != null) {
+                buyer = mapData.get("acc").toString();
+                OrderDetail detail = new OrderDetail();
+                detail.setItemId(Integer.parseInt(mapData.get("id").toString()));
+                detail.setQuantity(Integer.parseInt(mapData.get("q").toString()));
+                detail.setAmount(totalAmount);
+                listDetail.add(detail);
+            }
+            else{
+                
+            }
+            
+            String strResult = APISale.createOrder(bankId, totalAmount, "", "", "", "", listDetail, bankCode, ip, buyer);
+            OrderCreateResp resp = gson.fromJson(strResult, OrderCreateResp.class);
+            if(resp.getCode() == 1){
+                result = resp.getData().getUrl();
+            }
+        }
+
+        return result;
+    }
+
+    private String renderListBank() throws Exception {
+        String html = "";
+        List<Bank> listBank = this.getListBank();
+        for (Bank item : listBank) {
+            html += "<li onclick=\"chooseBank(this);\" data-bank=\"" + item.getBankName() + "\">"
+                    + "<a href=\"javascript:;\"><span class=\"sprtbank logobank " + item.getImageFile() + "\"></span></a>"
+                    + "</li>";
         }
 
         return html;
-    }*/
+    }
 
+    private List<Bank> getListBank() throws Exception {
+        ResponseBank response = new Gson().fromJson(APISale.getListBank(), ResponseBank.class);
+        if (response.getCode() == 1) {
+            List<Bank> listBank = (List<Bank>) response.getData();
+            return listBank;
+        }
+        return null;
+    }
 }

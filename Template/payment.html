@@ -1,6 +1,5 @@
 <div class="wrap">
-    <div class="localpath"><a href="#">Trang chủ</a><span class="sprt icolocalpath"></span><a href="#">Mua mã thẻ điện thoại</a><span class="sprt icolocalpath"></span><em>Viettel</em></div>
-    <div class="boxpromotion">VIETTEL khuyến mại 50% ngày <strong>30/10</strong> đến <strong>31/10/2015</strong></div>
+    <div class="localpath"><a href="javascript:;">Trang chủ</a><span class="sprt icolocalpath"></span><a href="javascript:;">Mua mã thẻ điện thoại</a><span class="sprt icolocalpath"></span><em>Viettel</em></div>
     <div class="boxpayment clearfix">
         <div class="row">
             <span class="row_st">Thanh toán</span>
@@ -10,6 +9,9 @@
         <ul class="clearfix" id="listBank">
             {{list_bank}}
         </ul>
-        <p class="ctnbtn"><a href="#" class="btnaction">Thanh toán</a><a href="#" class="btncancel">Quay lại</a></p>
+        <p class="ctnbtn">
+            <a href="javascript:;" onclick="acceptPayment();" class="btnaction">Thanh toán</a>
+            <a href="javascript:;" class="btncancel">Quay lại</a>
+        </p>
     </div>
 </div>

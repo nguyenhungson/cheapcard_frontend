@@ -8,7 +8,10 @@ package cc.frontend.callapi;
 import com.google.gson.Gson;
 import cc.frontend.common.TGRConfig;
 import cc.frontend.common.Utils;
+import cc.frontend.entity.OrderCreateReq;
+import cc.frontend.entity.OrderDetail;
 import java.util.Calendar;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
@@ -33,7 +36,7 @@ public class APISale {
 
         return result;
     }
-    
+
     public static String getListBank() throws Exception {
         String url = TGRConfig.gApiCheapCard.getUrl() + "getbanklst";
         String time = String.valueOf(Calendar.getInstance().getTimeInMillis());
@@ -46,5 +49,31 @@ public class APISale {
 
         return result;
     }
-    
+
+    public static String createOrder(int bankId, long totalAmount, String email, String fullName, String idNumber,
+            String mobile, List<OrderDetail> detail, String bankCode, String ip, String buyer) throws Exception {
+        String url = TGRConfig.gApiCheapCard.getUrl() + "createorder";
+        long time = Calendar.getInstance().getTimeInMillis();
+        String sig = Utils.encryptSHA256(String.valueOf(bankId) + TGRConfig.secretSplit + String.valueOf(totalAmount)
+                + TGRConfig.secretSplit + time + TGRConfig.secretSplit + ip + TGRConfig.secretSplit 
+                + bankCode + TGRConfig.secretSplit + TGRConfig.gApiCheapCard.getSecret());
+
+        OrderCreateReq req = new OrderCreateReq();
+        req.setBankCode(bankCode);
+        req.setBankId(bankId);
+        req.setBuyer(buyer);
+        req.setDetails(detail);
+        req.setEmail(email);
+        req.setFullName(fullName);
+        req.setIdNumber(idNumber);
+        req.setIp(ip);
+        req.setMobile(mobile);
+        req.setSig(sig);
+        req.setTime(time);
+        req.setTotalAmount(totalAmount);
+        String result = Utils.callAPIRestObject(url, req);
+
+        return result;
+    }
+
 }

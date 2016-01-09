@@ -12,14 +12,12 @@ import cc.frontend.entity.Item;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,6 +55,9 @@ public class TopupGameController extends HttpServlet {
 
     private String renderHtml(HttpServletRequest req) throws Exception {
         TemplateDataDictionary myDic = TemplateDictionary.create();
+        Item itemZx = this.getZXInfo();
+        myDic.setVariable("zx_price", String.valueOf(itemZx.getDiscountPercent()));
+        myDic.setVariable("total_amount", Utils.formatNumber((100 - itemZx.getDiscountPercent()) * 10));
         String mainContent = Utils.renderTemplate("Template/topupgame.html", myDic);
 
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
@@ -67,27 +68,34 @@ public class TopupGameController extends HttpServlet {
         String result = "";
 
         String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
-        if (pathInfo.equals("/choose_card")) {
-            Map<Integer, Item> mapItem = BusinessProcess.getListItem();
-            String listCard[] = req.getParameter("listCard").split(",");
-            int totalAmount = 0;
-            String param = "";
-            for (int i = 0; i < listCard.length; i++) {
-                if (!listCard[i].equals("")) {
-                    String arrItem[] = listCard[i].split("-");
-                    if (!arrItem[1].equals("0")) {
-                        int itemId = Integer.parseInt(arrItem[0]);
-                        int quantity = Integer.parseInt(arrItem[1]);
-                        totalAmount += (mapItem.get(itemId).getUnitPrice() * ((100 - mapItem.get(itemId).getDiscountPercent()) / 100) * quantity);
-                        param += String.format("%s=%s&%s=%s&", "id" + i, itemId, "q" + i, arrItem[1]);
-                    }
-                }
-            }
+        if (pathInfo.equals("/accept_topup")) {
+            Item itemZx = this.getZXInfo();
+            String accountName = req.getParameter("accountName");
+            int quantity = Integer.parseInt(req.getParameter("quantity"));
+            int totalAmount = (int) (quantity * (100 - itemZx.getDiscountPercent()));
+            String param = String.format("id=%s&acc=%s&q=%s&", itemZx.getId(), accountName, quantity);
             String sig = Utils.encryptMD5(param + "|" + totalAmount + "|" + TGRConfig.gApiCheapCard.getSecret());
-            result = "/thanhtoan/banthe?" + param + "t=" + totalAmount + "&sig=" + sig;
+            result = "/thanhtoan/naptiengame?" + param + "t=" + totalAmount + "&sig=" + sig;
         }
 
         return result;
+    }
+    
+    private Item getZXInfo() throws Exception {
+        Map<Integer, Item> mapItem = BusinessProcess.getListItem();
+        Item item = null;
+        if (mapItem != null) {
+            Iterator it = mapItem.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
+                if(pair.getValue().getSupplier().equals("zxu")){
+                    item = mapItem.get(pair.getKey());
+                    break;
+                }
+            }
+        }
+            
+        return item;
     }
 
 }

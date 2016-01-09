@@ -1,33 +1,49 @@
 <div class="wrap">
     <div class="localpath"><a href="#">Trang chủ</a><span class="sprt icolocalpath"></span><a href="#">Nạp tiền game</a><span class="sprt icolocalpath"></span><em>ZingXu</em></div>
-    <div class="boxpromotion">VIETTEL khuyến mại 50% ngày <strong>30/10</strong> đến <strong>31/10/2015</strong></div>
     <div class="boxcontent clearfix">
         <div class="colfrist fl">
             <div class="bxcontent">
                 <div class="row">
                     <span class="row_st">Tên tài khoản</span>
-                    <span class="row_nd"><input type="text" value="" placeholder="VD: lantrinh86"></span>
+                    <span class="row_nd"><input type="text" id="accountName" value="" placeholder="VD: lantrinh86"></span>
                     <!--<span class="row_rd"><span class="sprt icocheck"></span>Gamer</span>-->
-                    <span class="row_rd"><span class="sprt icoincorrect"></span></span>
+                    <span class="row_rd" style="display:none"><span class="sprt icoincorrect"></span></span>
                 </div>
-                <div class="row report">
+                <div class="row report" style="display: none">
                     <span class="row_st">&nbsp;</span>
                     <span class="row_nd">Tên tài khoản không hợp lệ</span>
                     <span class="row_rd">&nbsp;</span>
                 </div>
                 <div class="row">
                     <span class="row_st">Số ZingXu</span>
-                    <span class="row_nd"><input type="text" value="" placeholder="Nhập số ZingXu "></span>
+                    <span class="row_nd">
+                        <select id="quantity" onchange="calTotalAmountZX();">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="300">300</option>
+                            <option value="500">500</option>
+                            <option value="1000">1.000</option>
+                            <option value="2000">2.000</option>
+                            <option value="3000">3.000</option>
+                            <option value="5000">5.000</option>
+                            <option value="10000">10.000</option>
+                        </select>
+                    </span>
                     <span class="row_rd">&nbsp;</span>
                 </div>
                 <div class="row">
                     <span class="row_st">Thanh toán</span>
-                    <span class="row_nd"><span>95.000 <em>VNĐ</em></span></span>
+                    <span class="row_nd"><span><span id="totalAmount">{{total_amount}}</span> <em>VNĐ</em></span></span>
                     <span class="row_rd">&nbsp;</span>
+                    <input type="hidden" id="zxPrice" value="{{zx_price}}" />
                 </div>
                 <div class="row ctnbtn">
                     <span class="row_st">&nbsp;</span>
-                    <span class="row_nd"><a class="btnaction" href="#">Tiếp tục</a></span>
+                    <span class="row_nd"><a class="btnaction" href="javascript:;" onclick="acceptTopupGame();">Tiếp tục</a></span>
                     <span class="row_rd">&nbsp;</span>
                 </div>
             </div>
