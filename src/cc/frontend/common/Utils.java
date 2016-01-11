@@ -4,6 +4,11 @@
  */
 package cc.frontend.common;
 
+import cc.frontend.callapi.APISale;
+import cc.frontend.entity.Bank;
+import cc.frontend.entity.News;
+import cc.frontend.entity.NewsDetail;
+import cc.frontend.entity.ResponseBank;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -35,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -167,14 +173,54 @@ public class Utils {
     }
     
     public static String renderTemplateMasterpage(String mainContent, TemplateDataDictionary myDic) throws Exception{
+        myDic.setVariable("list_news", Utils.getListNews());
         myDic.setVariable("main_content", mainContent);
+        List<Bank> listBank = Utils.getListBank();
+        String htmlBank = "";
+        for(Bank item : listBank){
+            htmlBank += "<li><a href=\"javascript:;\"><span class=\"sprtbank logobank " + item.getImageFile() + "\"></span></a></li>";
+        }
+        myDic.setVariable("list_bank", htmlBank);
         String masterPage = Utils.renderTemplate("Template/masterpage.html", myDic);
         return masterPage;
+    }
+    
+    public static List<Bank> getListBank() throws Exception {
+        ResponseBank response = new Gson().fromJson(APISale.getListBank(), ResponseBank.class);
+        if (response.getCode() == 1) {
+            List<Bank> listBank = (List<Bank>) response.getData();
+            return listBank;
+        }
+        return null;
     }
     
     public static String render404Page(TemplateDataDictionary myDic) throws Exception{
         String masterPage = Utils.renderTemplate("Template/404.html", myDic);
         return masterPage;
+    }
+    
+    public static String getListNews(){
+        Object objListNews = LocalCache.getInstance().getObjectCache("listNews");
+        String listNews = "";
+        if(objListNews != null){
+            listNews = objListNews.toString();
+        }
+        else{
+            listNews = Utils.readFile("File/news.txt");
+            LocalCache.getInstance().setObjectCache("listNews", listNews, 5 * 60 * 1000);
+        }
+        
+        String htmlNews = "";
+        
+        News news = new Gson().fromJson(listNews, News.class);
+        List<NewsDetail> list = news.getNews();
+        for(NewsDetail item : list){
+            htmlNews += "<li><p>"
+                    + "<a href=\"" + item.getLink() + "\">" + item.getContent() + "</a>"
+                    + "</p></li>";
+        }
+        
+        return htmlNews;
     }
 
     public static String getClientIP(HttpServletRequest req) {

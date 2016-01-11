@@ -2,8 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" href="{{static_url}}/css/jcarousel.responsive.css?version={{static_version}}" />
         <link rel="stylesheet" type="text/css" href="{{static_url}}/css/screen.css?version={{static_version}}" />
         <script type="text/javascript" src="{{static_url}}/js/jquery-1.11.1.js"></script>
+        <script type="text/javascript" src="{{static_url}}/js/jquery.jcarousel.min.js"></script>
+        <script type="text/javascript" src="{{static_url}}/js/jcarousel.responsive.js"></script>
         <script type="text/javascript" src="{{static_url}}/js/common.js?version={{static_version}}"></script>
         <script type="text/javascript" src="{{static_url}}/js/script.js?version={{static_version}}"></script>
         <title>Thẻ Giá Rẻ - Mua lẻ với giá sỉ</title>
@@ -13,21 +16,16 @@
             <div class="wrap">
                 <h1 class="logo"><a href="/" title="Trang chủ"><img src="{{static_url}}/images/logo.png" alt=""></a></h1>
                 <ul>
-                    <li><p><span>VIETTEL</span> khuyến mại 50% ngày 14/11/2015 <em>(1 ngày duy nhất)</em></p></li>
-                    <li><p><span>Vinaphone</span> khuyến mại 50% ngày 11/11/2015 <em>(1 ngày duy nhất)</em></p></li>
-                    <li><p><span>Mobifone</span> khuyến mại 50% ngày 05/11/2015 <em>(1 ngày duy nhất)</em></p></li>
+                    {{list_news}}
                 </ul>
             </div>
         </div>
         <div class="menu">
             <div class="wrap">
                 <ul>
-                    <li><a class="current" href="#"><span class="sprt icohome"></span></a></li>
-                    <li><a href="#">MUA MÃ THẺ ĐIỆN THOẠI</a></li>
-                    <li><a href="#">MUA MÃ THẺ GAME</a></li>
-                    <li><a href="#">NẠP TIỀN GAME</a></li>
-                    <li><a href="#">BẢNG GIÁ</a></li>
-                    <li><b>0908 246 357</b> <em>HOTLINE</em></li>
+                    <li><a class="current" href="/"><span class="sprt icohome"></span></a></li>
+                    <li style="float: right"><b>0908 246 357</b> <em>HOTLINE</em></li>
+                    <li style="float: right"><a href="#">BẢNG GIÁ</a></li>
                 </ul>
             </div>
         </div>
@@ -40,21 +38,14 @@
         <div class="footer clearfix">
             <div class="wrap">
                 <h4>HỖ TRỢ THANH TOÁN</h4>
-                <div class="boxbank clearfix">
-                    <a class="icoarrow" href="#"><span class="sprt icoarrowpre dis"></span></a>
-                    <ul>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#"></a></li>
-                    </ul>
-                    <a class="icoarrow rt" href="#"><span class="sprt icoarrownext"></span></a>
+                <div class="jcarousel-wrapper">
+                    <div class="boxbank clearfix jcarousel" data-jcarousel="true">
+                        <ul>
+                            {{list_bank}}
+                        </ul>
+                    </div>
+                    <a class="icoarrow" href="#"><span class="sprt icoarrowpre dis jcarousel-control-prev" data-jcarouselcontrol="true"></span></a>
+                    <a class="icoarrow rt" href="#"><span class="sprt icoarrownext jcarousel-control-next" data-jcarouselcontrol="true"></span></a>
                 </div>
                 <div class="boxend">
                     <p class="fl">

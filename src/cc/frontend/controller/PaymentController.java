@@ -5,6 +5,7 @@
 package cc.frontend.controller;
 
 import cc.frontend.callapi.APISale;
+import cc.frontend.common.TGRConfig;
 import com.google.gson.Gson;
 import cc.frontend.common.Utils;
 import cc.frontend.entity.Bank;
@@ -79,10 +80,24 @@ public class PaymentController extends HttpServlet {
     }
 
     private int checkURL(HttpServletRequest req, String pathInfo) {
-        int result = 1;
-        if (pathInfo.equals("/banthe")) {
-            String params = "";
-
+        int result = 0;
+        if (pathInfo.equals("/naptiengame")) {
+            String id = req.getParameter("id");
+            String account = req.getParameter("acc");
+            String quantity = req.getParameter("q");
+            String total = req.getParameter("t");
+            String reqSig = req.getParameter("sig");
+            String param = String.format("id=%s&acc=%s&q=%s&", id, account, quantity);
+            String sig = Utils.encryptMD5(param + "|" + total + "|" + TGRConfig.gApiCheapCard.getSecret());
+            if(sig.equals(reqSig)){
+                result = 1;
+            }
+        }
+        else if(pathInfo.equals("/banthe")){
+            
+        }
+        else if(pathInfo.equals("/hoanthanh")){
+            
         }
 
         return result;
@@ -111,7 +126,7 @@ public class PaymentController extends HttpServlet {
             List<OrderDetail> listDetail = new ArrayList<OrderDetail>();
             String ip = Utils.getClientIP(req);
 
-            List<Bank> listBank = this.getListBank();
+            List<Bank> listBank = Utils.getListBank();
             for (Bank item : listBank) {
                 if (item.getBankName().equals(bankName)) {
                     bankId = item.getId();
@@ -144,22 +159,13 @@ public class PaymentController extends HttpServlet {
 
     private String renderListBank() throws Exception {
         String html = "";
-        List<Bank> listBank = this.getListBank();
+        List<Bank> listBank = Utils.getListBank();
         for (Bank item : listBank) {
-            html += "<li onclick=\"chooseBank(this);\" data-bank=\"" + item.getBankName() + "\">"
+            html += "<li onclick=\"chooseBank(this);\" title=\"" + item.getBankName() + "\" data-bank=\"" + item.getBankCode() + "\">"
                     + "<a href=\"javascript:;\"><span class=\"sprtbank logobank " + item.getImageFile() + "\"></span></a>"
                     + "</li>";
         }
 
         return html;
-    }
-
-    private List<Bank> getListBank() throws Exception {
-        ResponseBank response = new Gson().fromJson(APISale.getListBank(), ResponseBank.class);
-        if (response.getCode() == 1) {
-            List<Bank> listBank = (List<Bank>) response.getData();
-            return listBank;
-        }
-        return null;
     }
 }
