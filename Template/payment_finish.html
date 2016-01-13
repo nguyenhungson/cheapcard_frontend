@@ -1,8 +1,26 @@
 <div class="wrap">
-    <div class="localpath"><a href="#">Trang chủ</a><span class="sprt icolocalpath"></span><a href="#">Mua mã thẻ điện thoại</a><span class="sprt icolocalpath"></span><em>Viettel</em></div>
+    <div class="localpath"><a href="#">Trang chủ</a><span class="sprt icolocalpath"></span><a href="#">{{title}}</a></div>
     <div class="boxcontent clearfix">
         <div class="colfrist fl">
             <div class="bxcontent card">
+                <div class="row">
+                    <span class="row_st">Trạng thái</span>
+                    <span class="row_nd">{{status}}</span>
+                </div>
+                <div class="row">
+                    <span class="row_st">Mã giao dịch</span>
+                    <span class="row_st"><strong>{{order_no}}</strong></span>
+                    <span><em>(Vui lòng ghi nhớ Mã giao dịch để cung cấp cho chúng tôi khi cần)</em></span>
+                </div>
+                <div class="row">
+                    <span class="row_st">Ngày giao dịch</span>
+                    <span class="row_nd"><strong>{{date_trans}}</strong></span>
+                </div>
+                <div class="row">
+                    <span class="row_st">Tổng tiền</span>
+                    <span class="row_nd"><strong style="color:red">{{total_amount}} VNĐ</strong></span>
+                </div>
+                {{#CARD}}
                 <table class="result" width="100%" border="0" cellspacing="0" cellpadding="10">
                     <thead>
                         <tr>
@@ -12,9 +30,10 @@
                             <th>&nbsp;</th>
                         </tr>
                     </thead>
-                    <tbody><tr>
+                    <tbody>
+                        <tr>
                             <td class="boxcard">
-                                <a class="imgcard sel" href="#"><img src="images/cards/viettel10.jpg" alt=""> </a>
+                                <a class="imgcard sel" href="#"><img src="{{static_url}}/images/cards/viettel10.jpg" alt=""> </a>
                             </td>
                             <td class="colseri">042064000001073</td>
                             <td class="colcode">0169479483771</td>
@@ -22,7 +41,7 @@
                         </tr>
                         <tr>
                             <td class="boxcard">
-                                <a class="imgcard sel" href="#"><img src="images/cards/viettel100.jpg" alt=""> </a>
+                                <a class="imgcard sel" href="#"><img src="{{static_url}}/images/cards/viettel100.jpg" alt=""> </a>
                             </td>
                             <td class="colseri">042064000001073</td>
                             <td class="colcode">0169479483771</td>
@@ -30,10 +49,14 @@
                         </tr>
                         <tr>
                             <td class="boxcard">&nbsp;</td>
-                            <td class="colbtn" colspan="3"><a class="btnaction" href="#">Xuất PDF</a><a class="btnaction" href="#">Xuất Exel</a><a class="btnaction" href="#">Copy mã thẻ</a></td>
+                            <td class="colbtn" colspan="2">
+                                <a class="btnaction" href="#">Xuất Exel</a>
+                                <a class="btnaction" href="#">Copy mã thẻ</a>
+                            </td>
                         </tr>
-
-                    </tbody></table>
+                    </tbody>
+                </table>
+                {{/CARD}}
             </div>
         </div>
         <div class="colsecond fr">
