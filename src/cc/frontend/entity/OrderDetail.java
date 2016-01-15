@@ -5,15 +5,29 @@
  */
 package cc.frontend.entity;
 
+import java.util.List;
+
 /**
  *
  * @author sonnh4
  */
 public class OrderDetail {
-    
+
+    private long id;
     private int itemId;
     private int quantity;
     private long amount;
+    private String esaleSupplierCode;
+    private int unitPrice;
+    private List<OrderData> data;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public int getItemId() {
         return itemId;
@@ -38,5 +52,29 @@ public class OrderDetail {
     public void setAmount(long amount) {
         this.amount = amount;
     }
-    
+
+    public String getEsaleSupplierCode() {
+        return esaleSupplierCode;
+    }
+
+    public void setEsaleSupplierCode(String esaleSupplierCode) {
+        this.esaleSupplierCode = esaleSupplierCode;
+    }
+
+    public int getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(int unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public List<OrderData> getData() {
+        return data;
+    }
+
+    public void setData(List<OrderData> data) {
+        this.data = data;
+    }
+
 }

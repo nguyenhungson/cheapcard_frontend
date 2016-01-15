@@ -12,7 +12,10 @@ import cc.frontend.common.Utils;
 import cc.frontend.entity.Bank;
 import cc.frontend.entity.Item;
 import cc.frontend.entity.OrderCreateResp;
+import cc.frontend.entity.OrderData;
 import cc.frontend.entity.OrderDetail;
+import cc.frontend.entity.OrderStatusResp;
+import cc.frontend.entity.ResponseCheckStatus;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
@@ -66,48 +69,81 @@ public class PaymentController extends HttpServlet {
         TemplateDataDictionary myDic = TemplateDictionary.create();
         String mainContent = "";
         if (pathInfo.equals("/banthe") || pathInfo.equals("/naptiengame")) {
-            if(this.checkURL(req, pathInfo) == 1){
+            if (this.checkURL(req, pathInfo) == 1) {
                 if (req.getParameter("t") != null) {
                     String totalAmount = Utils.formatNumber(Integer.parseInt(req.getParameter("t")));
                     myDic.setVariable("total_amount", totalAmount);
                 }
                 myDic.setVariable("list_bank", this.renderListBank());
                 mainContent = Utils.renderTemplate("Template/payment.html", myDic);
-            }
-            else{
+            } else {
                 mainContent = Utils.render404Page(myDic);
             }
         } else if (pathInfo.equals("/hoanthanh")) {
-            if(this.checkURL(req, pathInfo) == 1){
-                String transId = req.getParameter("transid");
-                String amount = req.getParameter("amount");
-                String rescode = req.getParameter("rescode");
-                String type = req.getParameter("type");
-                String status = req.getParameter("status");
-                
-                if(type.equals("zx")){
+            if (this.checkURL(req, pathInfo) == 1) {
+                String param = req.getParameter("p");
+                String arrParam[] = param.split("\\.");
+                String transId = arrParam[0];
+                String amount = arrParam[1];
+                String rescode = arrParam[2];
+                String type = arrParam[3];
+                String status = req.getParameter("status") == null ? "0" : req.getParameter("status");
+                int isGetCard = 0;
+
+                if (type.equals("zx")) {
                     myDic.setVariable("title", "Nạp tiền ZingXu");
-                }
-                else{
+                } else {
+                    isGetCard = 1;
                     myDic.setVariable("title", "Mua mã thẻ");
                 }
-                
+
                 String info = "<strong style=\"color:red\">Giao dịch thất bại</strong>";
-                if(rescode.equals("1") && status.equals("1")){
+                if (rescode.equals("1") && status.equals("1")) {
+                    //call check status
                     info = "<strong style=\"color:green\">Giao dịch thành công</strong>";
-                    if(type.equals("card")){
-                        myDic.showSection("CARD");
+                    if (type.equals("card")) {
+                        String checkStatus = APISale.checkStatus(transId, isGetCard);
+                        ResponseCheckStatus responseAPI = gson.fromJson(checkStatus, ResponseCheckStatus.class);
+                        int rspCode = responseAPI.getCode();
+                        while (rspCode == 3) {
+                            logger.info("sleep 5s because rspCode = 3");
+                            Thread.sleep(5000);
+                            responseAPI = gson.fromJson(checkStatus, ResponseCheckStatus.class);
+                            rspCode = responseAPI.getCode();
+                        }
+
+                        if (rspCode == 1) {
+                            String htmlCard = "";
+                            OrderStatusResp orderResp = responseAPI.getData();
+                            List<OrderDetail> listDetail = orderResp.getDetails();
+                            Map<Integer, Item> listProduct = BusinessProcess.getListItem();
+                            for (OrderDetail detailItem : listDetail) {
+                                List<OrderData> cardData = detailItem.getData();
+                                for (OrderData item : cardData) {
+                                    htmlCard += "<tr>"
+                                            + "<td class=\"boxcard\">"
+                                            + "<a class=\"imgcard sel\" href=\"javascript:;\"><img src=\"" + TGRConfig.gStaticURL + "/images/cards/" + listProduct.get(detailItem.getItemId()).getImageFile() + ".jpg\" alt=\"\"> </a>"
+                                            + "</td>"
+                                            + "<td class=\"colseri\">" + item.getSerial() + "</td>"
+                                            + "<td class=\"colcode\">" + item.getCode() + "</td>"
+                                            + "<td class=\"colbtn\"><a class=\"btnaction\" href=\"#\">Copy mã thẻ</a></td>"
+                                            + "</tr>";
+                                }
+                            }
+
+                            myDic.setVariable("list_card", htmlCard);
+                            myDic.showSection("CARD");
+                        }
                     }
                 }
-                
+
                 myDic.setVariable("status", info);
                 myDic.setVariable("order_no", transId);
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 myDic.setVariable("date_trans", dateFormat.format(Calendar.getInstance().getTime()));
                 myDic.setVariable("total_amount", Utils.formatNumber(Integer.parseInt(amount)));
                 mainContent = Utils.renderTemplate("Template/payment_finish.html", myDic);
-            }
-            else{
+            } else {
                 mainContent = Utils.render404Page(myDic);
             }
         } else {
@@ -128,16 +164,15 @@ public class PaymentController extends HttpServlet {
             String reqSig = req.getParameter("sig");
             String param = String.format("id=%s&acc=%s&q=%s&", id, account, quantity);
             String sig = Utils.encryptMD5(param + "|" + total + "|" + TGRConfig.gApiCheapCard.getSecret());
-            if(sig.equals(reqSig)){
+            if (sig.equals(reqSig)) {
                 result = 1;
             }
-        }
-        else if(pathInfo.equals("/banthe")){
+        } else if (pathInfo.equals("/banthe")) {
             Map<String, String[]> mapParam = req.getParameterMap();
             int cardIndex = 0;
             String cardIdKey = "id0";
             String param = "";
-            while(mapParam.get(cardIdKey) != null){
+            while (mapParam.get(cardIdKey) != null) {
                 String quantityKey = "q" + cardIndex;
                 String id = mapParam.get(cardIdKey)[0];
                 String quantity = mapParam.get(quantityKey)[0];
@@ -148,18 +183,19 @@ public class PaymentController extends HttpServlet {
             String totalAmount = req.getParameter("t");
             String reqSig = req.getParameter("sig");
             String sig = Utils.encryptMD5(param + "|" + totalAmount + "|" + TGRConfig.gApiCheapCard.getSecret());
-            if(sig.equals(reqSig)){
+            if (sig.equals(reqSig)) {
                 result = 1;
             }
-        }
-        else if(pathInfo.equals("/hoanthanh")){
-            String transId = req.getParameter("transid");
-            String amount = req.getParameter("amount");
-            String rescode = req.getParameter("rescode");
-            String type = req.getParameter("type");
-            String sig = req.getParameter("secure");
+        } else if (pathInfo.equals("/hoanthanh")) {
+            String param = req.getParameter("p");
+            String arrParam[] = param.split("\\.");
+            String transId = arrParam[0];
+            String amount = arrParam[1];
+            String rescode = arrParam[2];
+            String type = arrParam[3];
+            String sig = arrParam[4];
             String sigValidate = Utils.encryptSHA1(transId + "|" + amount + "|" + rescode + "|" + type + "|" + TGRConfig.gApiCheapCard.getSecret());
-            if(sig.equals(sigValidate)){
+            if (sig.equals(sigValidate)) {
                 result = 1;
             }
         }
@@ -177,7 +213,7 @@ public class PaymentController extends HttpServlet {
             String arrParam[] = data.split("\\?|\\&");
             Map mapData = new HashMap();
             for (String item : arrParam) {
-                if(!item.equals("")){
+                if (!item.equals("")) {
                     String arrItem[] = item.split("=");
                     mapData.put(arrItem[0], arrItem[1]);
                 }
@@ -196,32 +232,31 @@ public class PaymentController extends HttpServlet {
                 detail.setQuantity(Integer.parseInt(mapData.get("q").toString()));
                 detail.setAmount(totalAmount);
                 listDetail.add(detail);
-            }
-            else{
+            } else {
                 buyer = "";
                 String cardIdKey = "id0";
                 int cardIndex = 0;
-                Map<Integer,Item> mapItem = BusinessProcess.getListItem();
-                while(mapData.get(cardIdKey) != null){
+                Map<Integer, Item> mapItem = BusinessProcess.getListItem();
+                while (mapData.get(cardIdKey) != null) {
                     OrderDetail detail = new OrderDetail();
                     String quantityKey = "q" + cardIndex;
                     int cardId = Integer.parseInt(mapData.get(cardIdKey).toString());
                     int quantity = Integer.parseInt(mapData.get(quantityKey).toString());
                     int amount = (int) (mapItem.get(cardId).getUnitPrice() * ((100 - mapItem.get(cardId).getDiscountPercent()) / 100) * quantity);
-                    
+
                     detail.setItemId(cardId);
                     detail.setQuantity(quantity);
                     detail.setAmount(amount);
                     listDetail.add(detail);
-                    
+
                     cardIndex++;
                     cardIdKey = "id" + cardIndex;
                 }
             }
-            
+
             String strResult = APISale.createOrder(bankId, totalAmount, "", "", "", "", listDetail, bankCode, ip, buyer);
             OrderCreateResp resp = gson.fromJson(strResult, OrderCreateResp.class);
-            if(resp.getCode() == 1){
+            if (resp.getCode() == 1) {
                 result = resp.getData().getUrl();
             }
         }

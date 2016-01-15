@@ -10,6 +10,7 @@ import cc.frontend.common.TGRConfig;
 import cc.frontend.common.Utils;
 import cc.frontend.entity.OrderCreateReq;
 import cc.frontend.entity.OrderDetail;
+import cc.frontend.entity.OrderStatusReq;
 import java.util.Calendar;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -55,7 +56,7 @@ public class APISale {
         String url = TGRConfig.gApiCheapCard.getUrl() + "createorder";
         long time = Calendar.getInstance().getTimeInMillis();
         String sig = Utils.encryptSHA256(String.valueOf(bankId) + TGRConfig.secretSplit + String.valueOf(totalAmount)
-                + TGRConfig.secretSplit + time + TGRConfig.secretSplit + ip + TGRConfig.secretSplit 
+                + TGRConfig.secretSplit + time + TGRConfig.secretSplit + ip + TGRConfig.secretSplit
                 + bankCode + TGRConfig.secretSplit + TGRConfig.gApiCheapCard.getSecret());
 
         OrderCreateReq req = new OrderCreateReq();
@@ -71,6 +72,23 @@ public class APISale {
         req.setSig(sig);
         req.setTime(time);
         req.setTotalAmount(totalAmount);
+        String result = Utils.callAPIRestObject(url, req);
+
+        return result;
+    }
+
+    public static String checkStatus(String orderNo, int isGetCard) throws Exception{
+        String url = TGRConfig.gApiCheapCard.getUrl() + "checkorderstatus";
+        long time = Calendar.getInstance().getTimeInMillis();
+        String sig = Utils.encryptSHA256(orderNo + TGRConfig.secretSplit + isGetCard + TGRConfig.secretSplit + time 
+                + TGRConfig.secretSplit + TGRConfig.gApiCheapCard.getSecret());
+        
+        OrderStatusReq req = new OrderStatusReq();
+        req.setOrderNo(orderNo);
+        req.setIsGetCard(isGetCard);
+        req.setTime(time);
+        req.setSig(sig);
+        
         String result = Utils.callAPIRestObject(url, req);
 
         return result;
