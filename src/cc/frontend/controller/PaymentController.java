@@ -70,11 +70,19 @@ public class PaymentController extends HttpServlet {
         String mainContent = "";
         if (pathInfo.equals("/banthe") || pathInfo.equals("/naptiengame")) {
             if (this.checkURL(req, pathInfo) == 1) {
+                if(pathInfo.equals("/banthe")){
+                    myDic.setVariable("title", "Mua mã thẻ");
+                }
+                else{
+                    myDic.setVariable("title", "Nạp tiền game");
+                }
+                
                 if (req.getParameter("t") != null) {
                     String totalAmount = Utils.formatNumber(Integer.parseInt(req.getParameter("t")));
                     myDic.setVariable("total_amount", totalAmount);
                 }
-                myDic.setVariable("list_bank", this.renderListBank());
+                myDic.setVariable("list_bank_atm", this.renderListBank(0));
+                myDic.setVariable("list_bank_pcc", this.renderListBank(1));
                 mainContent = Utils.renderTemplate("Template/payment.html", myDic);
             } else {
                 mainContent = Utils.render404Page(myDic);
@@ -100,14 +108,15 @@ public class PaymentController extends HttpServlet {
                 String info = "<strong style=\"color:red\">Giao dịch thất bại</strong>";
                 if (rescode.equals("1") && status.equals("1")) {
                     //call check status
+                    String checkStatus = APISale.checkStatus(transId, isGetCard);
                     info = "<strong style=\"color:green\">Giao dịch thành công</strong>";
                     if (type.equals("card")) {
-                        String checkStatus = APISale.checkStatus(transId, isGetCard);
                         ResponseCheckStatus responseAPI = gson.fromJson(checkStatus, ResponseCheckStatus.class);
                         int rspCode = responseAPI.getCode();
                         while (rspCode == 3) {
                             logger.info("sleep 5s because rspCode = 3");
                             Thread.sleep(5000);
+                            checkStatus = APISale.checkStatus(transId, isGetCard);
                             responseAPI = gson.fromJson(checkStatus, ResponseCheckStatus.class);
                             rspCode = responseAPI.getCode();
                         }
@@ -116,13 +125,12 @@ public class PaymentController extends HttpServlet {
                             String htmlCard = "";
                             OrderStatusResp orderResp = responseAPI.getData();
                             List<OrderDetail> listDetail = orderResp.getDetails();
-                            Map<Integer, Item> listProduct = BusinessProcess.getListItem();
                             for (OrderDetail detailItem : listDetail) {
                                 List<OrderData> cardData = detailItem.getData();
                                 for (OrderData item : cardData) {
                                     htmlCard += "<tr>"
                                             + "<td class=\"boxcard\">"
-                                            + "<a class=\"imgcard sel\" href=\"javascript:;\"><img src=\"" + TGRConfig.gStaticURL + "/images/cards/" + listProduct.get(detailItem.getItemId()).getImageFile() + ".jpg\" alt=\"\"> </a>"
+                                            + "<a class=\"imgcard sel\" href=\"javascript:;\"><img src=\"" + TGRConfig.gStaticURL + "/images/cards/" + detailItem.getImageFile() + ".jpg\" alt=\"\"> </a>"
                                             + "</td>"
                                             + "<td class=\"colseri\">" + item.getSerial() + "</td>"
                                             + "<td class=\"colcode\">" + item.getCode() + "</td>"
@@ -264,10 +272,17 @@ public class PaymentController extends HttpServlet {
         return result;
     }
 
-    private String renderListBank() throws Exception {
+    private String renderListBank(int isPCC) throws Exception {
         String html = "";
         List<Bank> listBank = Utils.getListBank();
         for (Bank item : listBank) {
+            if(isPCC == 0 && item.getBankCode().equals("123PCC")){
+                continue;
+            }
+            else if(isPCC == 1 && !item.getBankCode().equals("123PCC")){
+                continue;
+            }
+            
             html += "<li onclick=\"chooseBank(this);\" title=\"" + item.getBankName() + "\" data-bank=\"" + item.getBankCode() + "\">"
                     + "<a href=\"javascript:;\"><span class=\"sprtbank logobank " + item.getImageFile() + "\"></span></a>"
                     + "</li>";

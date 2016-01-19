@@ -24,13 +24,16 @@
             <div class="wrap">
                 <ul>
                     <li><a class="current" href="/"><span class="sprt icohome"></span></a></li>
-                    <li style="float: right"><b>0908 246 357</b> <em>HOTLINE</em></li>
-                    <li style="float: right"><a href="#">BẢNG GIÁ</a></li>
+                    <li><a href="#">TIN TỨC</a></li>
+                    <li><a href="#">BẢNG GIÁ</a></li>
+                    <li class="end"><b>0908 246 357</b> <em>HOTLINE</em></li>
                 </ul>
             </div>
         </div>
         <div class="hotnews">
-            <div class="wrap">Không cần tạo tài khoản: <strong>AN TOÀN - ĐƠN GIẢN - GIÁ RẺ <span style="color: red">- Miễn phí phí thanh toán qua thẻ ATM</span></strong></div>
+            <div class="wrap">Không cần tạo tài khoản: <strong>AN TOÀN - ĐƠN GIẢN - GIÁ RẺ.</strong> 
+                <p>Khuyến mãi: <b>Miễn phí dịch vụ khi thanh toán qua thẻ ATM</b></p>
+            </div>
         </div>
         <div class="main clearfix">
             {{main_content}}
@@ -56,6 +59,23 @@
                 </div>
             </div>
         </div>
+        <div class="esalepopup_overlay" id="formPopup" style="display: none">
+            <div class="popup_center esalepopup pu_med" id="boxPopup">
+                <a href="javascript:;" onclick="closePopup();" class="esalepuclose" title="Đóng">
+                    <span></span>
+                </a>
+                <div class="esaleputitle">
+                    <strong id="popup_title"></strong>
+                </div>
+                <div class="esalepucont" id="popup_content">
 
-
-    </body></html>
+                </div>
+                <div class="esalepubot">
+                    <div class="esalepubtn" id="popup_footer">
+                        <a href="javascript:;" class="cancelbtn" onclick="closePopup();">Đóng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

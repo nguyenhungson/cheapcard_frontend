@@ -4,8 +4,6 @@
  */
 package cc.frontend.entity;
 
-import java.util.List;
-
 /**
  *
  * @author viettd

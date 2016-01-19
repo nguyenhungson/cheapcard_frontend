@@ -18,13 +18,6 @@
                     <span class="row_st">Số ZingXu</span>
                     <span class="row_nd">
                         <select id="quantity" onchange="calTotalAmountZX();">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                            <option value="200">200</option>
-                            <option value="300">300</option>
                             <option value="500">500</option>
                             <option value="1000">1.000</option>
                             <option value="2000">2.000</option>
@@ -49,75 +42,25 @@
             </div>
         </div>
         <div class="colsecond fr">
-            <h3>Bảng giá thẻ điện thoại</h3>
+            <h3>Bảng giá ZingXu</h3>
             <table width="100%" border="0" cellspacing="0" cellpadding="5">
-                <tbody><tr class="titletbl">
-                        <td>Mệnh giá</td>
+                <tbody><tr class="bgselcard">
+                        <td colspan="3">
+                            <ul>
+                                <li><a class="current" href="#"><span class="sprtcard logocard zingxu"></span></a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="txtprotbl">
+                        <td colspan="2"><strong>1 ZingXu</strong> giá <strong>100</strong> VNĐ</td>
+                    </tr>
+                    <tr class="titletbl">
+                        <td>ZingXu</td>
                         <td>Giá bán</td>
                     </tr>
-                    <tr class="txtprotbl">
-                        <td colspan="2">Giảm giá <span>4%</span>  thẻ <strong>VIETTEL, MOBI, VINA</strong></td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>10.000</td>
-                        <td>9.600</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>20.000</td>
-                        <td>19.200</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>50.000</td>
-                        <td>48.000</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>100.000</td>
-                        <td>96.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>200.000</td>
-                        <td>196.000</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>300.000</td>
-                        <td>288.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>500.000</td>
-                        <td>480.000</td>
-                    </tr>
-                    <tr class="txtprotbl">
-                        <td colspan="2">Giảm giá <span>5%</span>  thẻ <strong>GMOBILE, VNMOBILE</strong></td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>10.000</td>
-                        <td>9.500</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>20.000</td>
-                        <td>19.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>50.000</td>
-                        <td>47.500</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>100.000</td>
-                        <td>95.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>200.000</td>
-                        <td>190.000</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>300.000</td>
-                        <td>285.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl end">
-                        <td>500.000</td>
-                        <td>475.000</td>
-                    </tr>
-                </tbody></table>
+                    {{list_price_zx}}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

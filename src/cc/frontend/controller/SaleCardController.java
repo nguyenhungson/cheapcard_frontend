@@ -12,6 +12,7 @@ import cc.frontend.entity.Item;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -56,9 +57,29 @@ public class SaleCardController extends HttpServlet {
 
     private String renderHtml(HttpServletRequest req) throws Exception {
         String pathInfo = req.getPathInfo() != null ? req.getPathInfo() : "";
+        String supplier = pathInfo.substring(1);
+        Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
+        Iterator it = mapListItem.entrySet().iterator();
+        int typeId = 0;
+        while (it.hasNext()) {
+            Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
+            if(pair.getValue().getSupplier().equals(supplier)){
+                typeId = pair.getValue().getTypeId();
+                break;
+            }
+        }
+
         TemplateDataDictionary myDic = TemplateDictionary.create();
         myDic.setVariable("card_name", WordUtils.capitalize(pathInfo.substring(1)));
         myDic.setVariable("list_card", this.renderListItem(pathInfo));
+        myDic.setVariable("list_price_card", this.renderListPriceCard(mapListItem, typeId, supplier));
+        if(typeId == 2){
+            myDic.showSection("CARD_PRICE");
+        }
+        else{
+            myDic.showSection("GAME_PRICE");
+        }
+        myDic.setVariable(supplier + "_current", "class=\"current\"");
         String mainContent = Utils.renderTemplate("Template/salecard.html", myDic);
 
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
@@ -106,7 +127,10 @@ public class SaleCardController extends HttpServlet {
                     html += "<tr>"
                             + "<td class=\"boxcard\">"
                             + "<input type=\"hidden\" value=\"" + pair.getValue().getId() + "\" />"
-                            + "<a class=\"imgcard\" href=\"javascript:;\" onclick=\"chooseCard(this, 1, 0);\"><img src=\"" + TGRConfig.gStaticURL + "/images/cards/" + pair.getValue().getImageFile() + ".jpg\" alt=\"\"> </a>"
+                            + "<a class=\"imgcard card" + pair.getValue().getUnitPrice() / 1000 + "k\" href=\"javascript:;\" onclick=\"chooseCard(this, 1, 0);\">"
+                            + "<span class=\"sprtcard logocard " + pair.getValue().getSupplier() + "\"></span>"
+                            + "<em>" + Utils.formatNumber(pair.getValue().getUnitPrice()) + " <i>VNĐ</i></em>"
+                            + "</a>"
                             + "</td>"
                             + "<td class=\"coldecrease\"><a href=\"javascript:;\" onclick=\"decreaseQuantity(this);\"><span class=\"sprt icodecrease\"></span></a></td>"
                             + "<td class=\"colinput\"><input type=\"text\" value=\"0\" placeholder=\"0\" maxlength=\"3\" onblur=\"chooseCard(this, 0, 0);\"></td>"
@@ -115,6 +139,59 @@ public class SaleCardController extends HttpServlet {
                             + "</tr>";
                 }
             }
+        }
+
+        return html;
+    }
+
+    private Map<String, String> addListPrice(Map<Integer, Item> mapListItem, int typeId, String supplier) throws Exception {
+        Iterator it = mapListItem.entrySet().iterator();
+        Map<String, String> mapListPrice = new HashMap<>();
+        Map<String, Integer> mapIndex = new HashMap<>();
+        while (it.hasNext()) {
+            Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
+            if(pair.getValue().getTypeId() != typeId){
+                continue;
+            }
+            
+            String styleDisplay = "display:none";
+            if(pair.getValue().getSupplier().equals(supplier)){
+                styleDisplay = "display:table-row";
+            }
+            
+            String htmlItem = mapListPrice.get(pair.getValue().getSupplier()) == null ? "" : mapListPrice.get(pair.getValue().getSupplier());
+            int indexNo = mapIndex.get(pair.getValue().getSupplier()) == null ? 0 : mapIndex.get(pair.getValue().getSupplier());
+            String className = " class=\"bggreytbl\"";
+            if (indexNo % 2 == 0) {
+                className = " class=\"bgwhitetbl\"";
+            }
+
+            htmlItem += "<tr" + className + " data-type=\"" + pair.getValue().getSupplier() + "\" style=\"" + styleDisplay + "\">"
+                    + "<td>" + Utils.formatNumber(pair.getValue().getUnitPrice()) + "</td>"
+                    + "<td>" + Utils.formatNumber(pair.getValue().getUnitPrice() * (100 - pair.getValue().getDiscountPercent()) / 100) + "</td>"
+                    + "</tr>";
+
+            mapListPrice.put(pair.getValue().getSupplier(), htmlItem);
+            mapIndex.put(pair.getValue().getSupplier(), ++indexNo);
+        }
+
+        return mapListPrice;
+    }
+
+    private String renderListPriceCard(Map<Integer, Item> mapListItem, int typeId, String supplier) throws Exception {
+        Map<String, String> mapListPrice = this.addListPrice(mapListItem, typeId, supplier);
+        Iterator it = mapListPrice.entrySet().iterator();
+        String html = "";
+        while (it.hasNext()) {
+            Map.Entry<String, String> pair = (Map.Entry) it.next();
+            String styleDisplay = "display:none";
+            if(pair.getKey().equals(supplier)){
+                styleDisplay = "display:table-row";
+            }
+            html += "<tr class=\"txtprotbl\" data-type=\"" + pair.getKey() + "\" style=\"" + styleDisplay + "\">"
+                    + "<td colspan=\"2\">Thẻ <strong>" + pair.getKey().toUpperCase() + "</strong></td>"
+                    + "</tr>"
+                    + pair.getValue();
         }
 
         return html;

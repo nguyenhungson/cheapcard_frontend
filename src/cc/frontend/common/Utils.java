@@ -499,7 +499,7 @@ public class Utils {
         httpPost.setHeader("Content-Type", "application/json;charset=UTF-8");
         httpPost.setHeader("Charset", "UTF-8");
         
-        httpPost.setEntity(new StringEntity(new Gson().toJson(req)));
+        httpPost.setEntity(new StringEntity(new Gson().toJson(req), "UTF-8"));
         try (CloseableHttpResponse res = httpclient.execute(httpPost)) {
             int statusCode = res.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_OK) {

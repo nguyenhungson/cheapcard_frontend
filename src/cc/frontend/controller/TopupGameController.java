@@ -57,11 +57,36 @@ public class TopupGameController extends HttpServlet {
         TemplateDataDictionary myDic = TemplateDictionary.create();
         Item itemZx = this.getZXInfo();
         myDic.setVariable("zx_price", String.valueOf(itemZx.getDiscountPercent()));
-        myDic.setVariable("total_amount", Utils.formatNumber((100 - itemZx.getDiscountPercent()) * 10));
+        myDic.setVariable("total_amount", Utils.formatNumber((100 - itemZx.getDiscountPercent()) * 500));
+        myDic.setVariable("list_price_zx", this.renderListPriceZX());
         String mainContent = Utils.renderTemplate("Template/topupgame.html", myDic);
 
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
+    }
+
+    private String renderListPriceZX() throws Exception {
+        String html = "";
+        int indexNo = 0;
+        Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
+        Iterator it = mapListItem.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
+            if (pair.getValue().getSupplier().equals("zxu")) {
+                String className = " class=\"bggreytbl\"";
+                if (indexNo % 2 == 0) {
+                    className = " class=\"bgwhitetbl\"";
+                }
+
+                html += "<tr" + className + ">"
+                        + "<td>" + Utils.formatNumber(pair.getValue().getUnitPrice()) + "</td>"
+                        + "<td>" + Utils.formatNumber(pair.getValue().getUnitPrice() * (100 - pair.getValue().getDiscountPercent()) / 100) + "</td>"
+                        + "</tr>";
+                indexNo++;
+            }
+        }
+
+        return html;
     }
 
     private String renderPost(HttpServletRequest req) throws Exception {
@@ -80,7 +105,7 @@ public class TopupGameController extends HttpServlet {
 
         return result;
     }
-    
+
     private Item getZXInfo() throws Exception {
         Map<Integer, Item> mapItem = BusinessProcess.getListItem();
         Item item = null;
@@ -88,13 +113,13 @@ public class TopupGameController extends HttpServlet {
             Iterator it = mapItem.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
-                if(pair.getValue().getSupplier().equals("zxu")){
+                if (pair.getValue().getSupplier().equals("zxu")) {
                     item = mapItem.get(pair.getKey());
                     break;
                 }
             }
         }
-            
+
         return item;
     }
 

@@ -19,7 +19,25 @@ public class OrderDetail {
     private long amount;
     private String esaleSupplierCode;
     private int unitPrice;
+    private String supplier;
+    private String imageFile;
     private List<OrderData> data;
+
+    public String getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
+    public String getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(String imageFile) {
+        this.imageFile = imageFile;
+    }
 
     public long getId() {
         return id;

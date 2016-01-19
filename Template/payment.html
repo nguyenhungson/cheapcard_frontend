@@ -1,5 +1,20 @@
 <div class="wrap">
-    <div class="localpath"><a href="javascript:;">Trang chủ</a><span class="sprt icolocalpath"></span><a href="javascript:;">Mua mã thẻ điện thoại</a><span class="sprt icolocalpath"></span><em>Viettel</em></div>
+    <div class="localpath"><a href="javascript:;">Trang chủ</a><span class="sprt icolocalpath"></span><a href="javascript:;">{{title}}</a></div>
+    <!--<div class="boxinfo clearfix">
+        <p class="title">Thông tin cá nhân <em>(Thông tin dùng để tra cứu khi có khiếu nại)</em></p>
+        <div class="row">
+            <span class="row_st">Họ và tên <span class="txtred">*</span></span>
+            <span class="row_nd"><input type="text" id="userName" value="" maxlength="100"></span>
+        </div>
+        <div class="row">
+            <span class="row_st">Email <span class="txtred">*</span></span>
+            <span class="row_nd"><input type="text" id="email" value="" maxlength="100"></span>
+        </div>
+        <div class="row">
+            <span class="row_st">Số điện thoại <span class="txtred">*</span></span>
+            <span class="row_nd"><input type="text" id="phoneNumber" value="" maxlength="20"></span>
+        </div>
+    </div>-->
     <div class="boxpayment clearfix">
         <div class="row">
             <span class="row_st">Thanh toán</span>
@@ -9,13 +24,17 @@
             <span class="row_st">Phí ngân hàng</span>
             <span class="row_nd"><span style="color: #43B649">Miễn phí</span></span>
         </div>
-        <p>Chọn ngân hàng thanh toán</p>
+        <p>Chọn thẻ ATM nội địa</p>
         <ul class="clearfix" id="listBank">
-            {{list_bank}}
+            {{list_bank_atm}}
+        </ul>
+        <p class="boxpcc">Hoặc thẻ thanh toán quốc tế</p>
+        <ul class="clearfix" id="listBank">
+            {{list_bank_pcc}}
         </ul>
         <p class="ctnbtn">
             <a href="javascript:;" onclick="acceptPayment();" class="btnaction">Thanh toán</a>
-            <a href="javascript:;" class="btncancel">Quay lại</a>
+            <a href="javascript:;" class="btncancel" onclick="backChoose();">Quay lại</a>
         </p>
     </div>
 </div>
