@@ -8,7 +8,7 @@ import cc.frontend.controller.TopupGameController;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -45,33 +45,35 @@ public class WebServer extends Thread {
         }
         logger_.info("get rest listen_port from zport=" + port);
 
-        Server server = new Server();
-
         QueuedThreadPool threadPool = new QueuedThreadPool();
         threadPool.setMaxThreads(max_threads);
-        threadPool.setMinThreads(min_threads);
-        server.setThreadPool(threadPool);
-
-        SelectChannelConnector connector = new SelectChannelConnector();
+        threadPool.setMinThreads(min_threads);       
+        Server server = new Server(threadPool);
+        
+        ServerConnector connector = new ServerConnector(server);
         connector.setPort(port);
-        connector.setMaxIdleTime(60000);
-        connector.setStatsOn(false);
-        connector.setLowResourcesConnections(20000);
-        connector.setLowResourcesMaxIdleTime(5000);
-        connector.setAcceptors(acceptors);
-        server.setConnectors(new Connector[]{connector});
+        connector.setIdleTimeout(60000);
+//        connector.setStatsOn(false);
+//        connector.setLowResourcesConnections(20000);
+//        connector.setLowResourcesMaxIdleTime(5000);
+//        connector.setAcceptors(acceptors);
 
         ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         handler.setSessionHandler(new SessionHandler());
-        server.setHandler(handler);
-
         handler.addServlet(SaleCardController.class, "/banthe/*");
         handler.addServlet(PaymentController.class, "/thanhtoan/*");
         handler.addServlet(TopupGameController.class, "/naptiengame/*");
         handler.addServlet(IndexController.class, "/*");
 
+        server.setConnectors(new Connector[]{connector});
+        server.setHandler(handler);                
         server.setStopAtShutdown(true);
-        server.setSendServerVersion(true);
+//        server.setSendServerVersion(true);
+        server.setStopTimeout(5000);// force stop after 5s
+        
+        ShutdownThread obj = new ShutdownThread(server);
+        Runtime.getRuntime().addShutdownHook(obj);
+        
         server.start();
         server.join();
     }
