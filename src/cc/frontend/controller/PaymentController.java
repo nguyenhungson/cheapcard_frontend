@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -55,7 +56,7 @@ public class PaymentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            String content = this.renderPost(req);
+            String content = this.renderPost(req, resp);
             if (!content.equals("")) {
                 Utils.out(content, resp);
             }
@@ -70,15 +71,15 @@ public class PaymentController extends HttpServlet {
         String mainContent = "";
         if (pathInfo.equals("/banthe") || pathInfo.equals("/naptiengame")) {
             if (this.checkURL(req, pathInfo) == 1) {
-                if(pathInfo.equals("/banthe")){
+                if (pathInfo.equals("/banthe")) {
                     myDic.setVariable("title", "Mua mã thẻ");
-                }
-                else{
+                } else {
                     myDic.setVariable("title", "Nạp tiền game");
                 }
-                
+
                 if (req.getParameter("t") != null) {
-                    String totalAmount = Utils.formatNumber(Integer.parseInt(req.getParameter("t")));
+                    int intAmount = Integer.parseInt(req.getParameter("t"));
+                    String totalAmount = Utils.formatNumber(intAmount);
                     myDic.setVariable("total_amount", totalAmount);
                 }
                 myDic.setVariable("list_bank_atm", this.renderListBank(0));
@@ -121,27 +122,55 @@ public class PaymentController extends HttpServlet {
                             rspCode = responseAPI.getCode();
                         }
 
+                        String supplier = "viettel";
+
                         if (rspCode == 1) {
                             String htmlCard = "";
                             OrderStatusResp orderResp = responseAPI.getData();
                             List<OrderDetail> listDetail = orderResp.getDetails();
                             for (OrderDetail detailItem : listDetail) {
+                                supplier = detailItem.getSupplier();
                                 List<OrderData> cardData = detailItem.getData();
                                 for (OrderData item : cardData) {
                                     htmlCard += "<tr>"
                                             + "<td class=\"boxcard\">"
-                                            + "<a class=\"imgcard sel\" href=\"javascript:;\"><img src=\"" + TGRConfig.gStaticURL + "/images/cards/" + detailItem.getImageFile() + ".jpg\" alt=\"\"> </a>"
+                                            + "<a class=\"imgcard card" + detailItem.getUnitPrice() / 1000 + "k\" href=\"javascript:;\"><span class=\"sprtcard logocard " + detailItem.getSupplier() + "\"></span><em>" + Utils.formatNumber(detailItem.getUnitPrice()) + " <i>VNĐ</i></em></a>"
+                                            + "<input type=\"hidden\" value=\"" + detailItem.getSupplier().toUpperCase() + " " + Utils.formatNumber(detailItem.getUnitPrice()) + "VNĐ - Serial:" + item.getSerial() + " - Mã nạp tiền:" + item.getCode() + "\" />"
+                                            + "<input type=\"hidden\" value=\"" + detailItem.getSupplier().toUpperCase() + "|" + Utils.formatNumber(detailItem.getUnitPrice()) + "|" + item.getSerial() + "|" + item.getCode() + "\" />"
                                             + "</td>"
                                             + "<td class=\"colseri\">" + item.getSerial() + "</td>"
                                             + "<td class=\"colcode\">" + item.getCode() + "</td>"
-                                            + "<td class=\"colbtn\"><a class=\"btnaction\" href=\"#\">Copy mã thẻ</a></td>"
+                                            + "<td class=\"colbtn\"><a class=\"btnaction\" href=\"javascript:;\">Copy mã thẻ</a></td>"
                                             + "</tr>";
                                 }
                             }
 
+                            Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
+                            Iterator it = mapListItem.entrySet().iterator();
+                            int typeId = 0;
+                            while (it.hasNext()) {
+                                Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
+                                if (pair.getValue().getSupplier().equals(supplier)) {
+                                    typeId = pair.getValue().getTypeId();
+                                    break;
+                                }
+                            }
+
+                            if (typeId == 2) {
+                                myDic.showSection("CARD_PRICE");
+                            } else {
+                                myDic.showSection("GAME_PRICE");
+                            }
+                            myDic.setVariable(supplier + "_current", "class=\"current\"");
+                            myDic.setVariable("list_price_card", BusinessProcess.renderListPriceCard(mapListItem, typeId, supplier));
+
                             myDic.setVariable("list_card", htmlCard);
                             myDic.showSection("CARD");
                         }
+                    } else {
+                        myDic.showSection("OTHER");
+                        myDic.showSection("ZINGXU");
+                        myDic.setVariable("list_price_zx", BusinessProcess.renderListPriceZX());
                     }
                 }
 
@@ -167,10 +196,9 @@ public class PaymentController extends HttpServlet {
         if (pathInfo.equals("/naptiengame")) {
             String id = req.getParameter("id");
             String account = req.getParameter("acc");
-            String quantity = req.getParameter("q");
             String total = req.getParameter("t");
             String reqSig = req.getParameter("sig");
-            String param = String.format("id=%s&acc=%s&q=%s&", id, account, quantity);
+            String param = String.format("id=%s&acc=%s&", id, account);
             String sig = Utils.encryptMD5(param + "|" + total + "|" + TGRConfig.gApiCheapCard.getSecret());
             if (sig.equals(reqSig)) {
                 result = 1;
@@ -211,7 +239,7 @@ public class PaymentController extends HttpServlet {
         return result;
     }
 
-    private String renderPost(HttpServletRequest req) throws Exception {
+    private String renderPost(HttpServletRequest req, HttpServletResponse respon) throws Exception {
         String result = "";
 
         String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
@@ -237,7 +265,7 @@ public class PaymentController extends HttpServlet {
                 buyer = mapData.get("acc").toString();
                 OrderDetail detail = new OrderDetail();
                 detail.setItemId(Integer.parseInt(mapData.get("id").toString()));
-                detail.setQuantity(Integer.parseInt(mapData.get("q").toString()));
+                detail.setQuantity(1);
                 detail.setAmount(totalAmount);
                 listDetail.add(detail);
             } else {
@@ -250,7 +278,7 @@ public class PaymentController extends HttpServlet {
                     String quantityKey = "q" + cardIndex;
                     int cardId = Integer.parseInt(mapData.get(cardIdKey).toString());
                     int quantity = Integer.parseInt(mapData.get(quantityKey).toString());
-                    int amount = (int) (mapItem.get(cardId).getUnitPrice() * ((100 - mapItem.get(cardId).getDiscountPercent()) / 100) * quantity);
+                    int amount = (int) mapItem.get(cardId).getDiscountAmount() * quantity;
 
                     detail.setItemId(cardId);
                     detail.setQuantity(quantity);
@@ -267,6 +295,14 @@ public class PaymentController extends HttpServlet {
             if (resp.getCode() == 1) {
                 result = resp.getData().getUrl();
             }
+        } else if (pathInfo.equals("/xuatexcel.html")) {
+            TemplateDataDictionary myDic = TemplateDictionary.create();
+            String exportExcel = this.renderExcel(req);
+            myDic.setVariable("table_data", exportExcel);
+            String template = Utils.renderTemplate("Template/export_excel.html", myDic);
+            respon.setContentType("application/vnd.ms-excel");
+            respon.setHeader("Content-Disposition", "attachment; filename=listcard.xls");
+            Utils.out(template, respon);
         }
 
         return result;
@@ -276,13 +312,12 @@ public class PaymentController extends HttpServlet {
         String html = "";
         List<Bank> listBank = Utils.getListBank();
         for (Bank item : listBank) {
-            if(isPCC == 0 && item.getBankCode().equals("123PCC")){
+            if (isPCC == 0 && item.getBankCode().equals("123PCC")) {
+                continue;
+            } else if (isPCC == 1 && !item.getBankCode().equals("123PCC")) {
                 continue;
             }
-            else if(isPCC == 1 && !item.getBankCode().equals("123PCC")){
-                continue;
-            }
-            
+
             html += "<li onclick=\"chooseBank(this);\" title=\"" + item.getBankName() + "\" data-bank=\"" + item.getBankCode() + "\">"
                     + "<a href=\"javascript:;\"><span class=\"sprtbank logobank " + item.getImageFile() + "\"></span></a>"
                     + "</li>";
@@ -290,4 +325,31 @@ public class PaymentController extends HttpServlet {
 
         return html;
     }
+
+    private String renderExcel(HttpServletRequest req) {
+        String title[] = {"STT", "Loại thẻ", "Mệnh giá", "Số serial", "Mã nạp tiền"};
+        String htmlExcel = "<tr>";
+        for (String item : title) {
+            htmlExcel += "<td style='text-align:center; font-weight:bold; background-color: #678991'>" + item + "</td>";
+        }
+        htmlExcel += "</tr>";
+
+        String dataExcel = req.getParameter("dataExcel");
+        String arrData[] = dataExcel.split("-");
+        int stt = 1;
+        for (String row : arrData) {
+            String arrItem[] = row.split("\\|");
+            htmlExcel += "<tr>"
+                    + "<td style=\"text-align:center\">" + stt + "</td>"
+                    + "<td style=\"text-align:left\">" + arrItem[0] + "</td>"
+                    + "<td style=\"text-align:right\">" + arrItem[1] + "</td>"
+                    + "<td style=\"text-align:center\">" + arrItem[2] + "</td>"
+                    + "<td style=\"text-align:center\">" + arrItem[3] + "</td>"
+                    + "</tr>";
+            stt++;
+        }
+
+        return htmlExcel;
+    }
+
 }

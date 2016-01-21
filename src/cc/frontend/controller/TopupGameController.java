@@ -12,7 +12,9 @@ import cc.frontend.entity.Item;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -55,38 +57,15 @@ public class TopupGameController extends HttpServlet {
 
     private String renderHtml(HttpServletRequest req) throws Exception {
         TemplateDataDictionary myDic = TemplateDictionary.create();
-        Item itemZx = this.getZXInfo();
-        myDic.setVariable("zx_price", String.valueOf(itemZx.getDiscountPercent()));
-        myDic.setVariable("total_amount", Utils.formatNumber((100 - itemZx.getDiscountPercent()) * 500));
-        myDic.setVariable("list_price_zx", this.renderListPriceZX());
+        List<Item> listItem = this.getZXInfo();
+        //myDic.setVariable("zx_price", String.valueOf(itemZx.getDiscountPercent()));
+        myDic.setVariable("list_price_zx", BusinessProcess.renderListPriceZX());
+        myDic.setVariable("total_amount", Utils.formatNumber(listItem.get(0).getDiscountAmount()));
+        myDic.setVariable("list_zx", this.renderListZX(listItem));
         String mainContent = Utils.renderTemplate("Template/topupgame.html", myDic);
 
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
-    }
-
-    private String renderListPriceZX() throws Exception {
-        String html = "";
-        int indexNo = 0;
-        Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
-        Iterator it = mapListItem.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
-            if (pair.getValue().getSupplier().equals("zxu")) {
-                String className = " class=\"bggreytbl\"";
-                if (indexNo % 2 == 0) {
-                    className = " class=\"bgwhitetbl\"";
-                }
-
-                html += "<tr" + className + ">"
-                        + "<td>" + Utils.formatNumber(pair.getValue().getUnitPrice()) + "</td>"
-                        + "<td>" + Utils.formatNumber(pair.getValue().getUnitPrice() * (100 - pair.getValue().getDiscountPercent()) / 100) + "</td>"
-                        + "</tr>";
-                indexNo++;
-            }
-        }
-
-        return html;
     }
 
     private String renderPost(HttpServletRequest req) throws Exception {
@@ -94,11 +73,10 @@ public class TopupGameController extends HttpServlet {
 
         String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
         if (pathInfo.equals("/accept_topup")) {
-            Item itemZx = this.getZXInfo();
             String accountName = req.getParameter("accountName");
-            int quantity = Integer.parseInt(req.getParameter("quantity"));
-            int totalAmount = (int) (quantity * (100 - itemZx.getDiscountPercent()));
-            String param = String.format("id=%s&acc=%s&q=%s&", itemZx.getId(), accountName, quantity);
+            String totalAmount = req.getParameter("amount");
+            String id = req.getParameter("id");
+            String param = String.format("id=%s&acc=%s&", id, accountName);
             String sig = Utils.encryptMD5(param + "|" + totalAmount + "|" + TGRConfig.gApiCheapCard.getSecret());
             result = "/thanhtoan/naptiengame?" + param + "t=" + totalAmount + "&sig=" + sig;
         }
@@ -106,21 +84,30 @@ public class TopupGameController extends HttpServlet {
         return result;
     }
 
-    private Item getZXInfo() throws Exception {
+    private List<Item> getZXInfo() throws Exception {
         Map<Integer, Item> mapItem = BusinessProcess.getListItem();
-        Item item = null;
+        List<Item> item = new ArrayList<Item>();
         if (mapItem != null) {
             Iterator it = mapItem.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
                 if (pair.getValue().getSupplier().equals("zxu")) {
-                    item = mapItem.get(pair.getKey());
-                    break;
+                    item.add(mapItem.get(pair.getKey()));
                 }
             }
         }
 
         return item;
+    }
+    
+    private String renderListZX(List<Item> listItem){
+        String html = "";
+        
+        for(Item item : listItem){
+            html += "<option value=\"" + item.getDiscountAmount() + "|" + item.getId() + "\">" + Utils.formatNumber(item.getUnitPrice())+ "</option>";
+        }
+        
+        return html;
     }
 
 }

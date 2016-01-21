@@ -1,5 +1,5 @@
 <div class="wrap">
-    <div class="localpath"><a href="#">Trang chủ</a><span class="sprt icolocalpath"></span><a href="#">{{title}}</a></div>
+    <div class="localpath"><a href="/">Trang chủ</a><span class="sprt icolocalpath"></span><a href="/">{{title}}</a></div>
     <div class="boxcontent clearfix">
         <div class="colfrist fl">
             <div class="bxcontent card">
@@ -21,7 +21,7 @@
                     <span class="row_nd"><strong style="color:red">{{total_amount}} VNĐ</strong></span>
                 </div>
                 {{#CARD}}
-                <table class="result" width="100%" border="0" cellspacing="0" cellpadding="10">
+                <table class="result" width="100%" border="0" cellspacing="0" cellpadding="10" id="tableCards">
                     <thead>
                         <tr>
                             <th>Loại thẻ</th>
@@ -33,93 +33,91 @@
                     <tbody>
                         {{list_card}}
                         <tr>
-                            <td class="boxcard">&nbsp;</td>
-                            <td class="colbtn" colspan="2">
-                                <a class="btnaction" href="#">Xuất Exel</a>
-                                <a class="btnaction" href="#">Copy mã thẻ</a>
+                            <td class="colbtn" colspan="4" style="text-align: center">
+                                <a class="btnaction" href="javascript:;" onclick="exportExcelCard();">Xuất Exel</a>
+                                <a class="btnaction" href="javascript:;" id="copyAll">Copy mã thẻ</a>
+                                <a class="btnaction" href="/">Tiếp tục mua hàng</a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+                <form action="/thanhtoan/xuatexcel.html" method="post" id="formExportExcel">
+                    <input type="hidden" name="dataExcel" value="" />
+                </form>
                 {{/CARD}}
-                
-                <div class="row ctnbtn">
-                    <span class="row_st">&nbsp;</span>
-                    <span class="row_nd"><a class="btnaction" href="/">Tiếp tục mua</a></span>
-                    <span class="row_rd">&nbsp;</span>
-                </div>
+                {{#OTHER}}
+                <table class="result" width="100%" border="0" cellspacing="0" cellpadding="10">
+                    <tr>
+                        <td class="colbtn" colspan="4" style="text-align: center">
+                            <a class="btnaction" href="/">Tiếp tục mua hàng</a>
+                        </td>
+                    </tr>
+                </table>
+                {{/OTHER}}
             </div>
         </div>
         <div class="colsecond fr">
+            {{#CARD_PRICE}}
             <h3>Bảng giá thẻ điện thoại</h3>
+            <table width="100%" border="0" cellspacing="0" cellpadding="5" id="tablePriceList">
+                <tbody>
+                    <tr class="bgselcard">
+                        <td colspan="3">
+                            <ul>
+                                <li onclick="getListPrice('viettel');" data-type="viettel"><a href="javascript:;" {{viettel_current}}><span class="sprtcard logocard viettel"></span></a></li>
+                                <li onclick="getListPrice('mobifone');" data-type="mobifone"><a href="javascript:;" {{mobifone_current}}><span class="sprtcard logocard mobifone"></span></a></li>
+                                <li onclick="getListPrice('vinaphone');" data-type="vinaphone"><a href="javascript:;" {{vinaphone_current}}><span class="sprtcard logocard vinaphone"></span></a></li>
+                                <li onclick="getListPrice('vietnamobile');" data-type="vietnamobile"><a href="javascript:;" {{vietnamobile_current}}><span class="sprtcard logocard vietnamobile"></span></a></li>
+                                <li onclick="getListPrice('gmobile');" data-type="gmobile"><a href="javascript:;" {{gmobile_current}}><span class="sprtcard logocard gmobile"></span></a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    {{list_price_card}}
+                </tbody>
+            </table>
+            {{/CARD_PRICE}}
+            {{#GAME_PRICE}}
+            <h3>Bảng giá thẻ game</h3>
+            <table width="100%" border="0" cellspacing="0" cellpadding="5" id="tablePriceList">
+                <tbody>
+                    <tr class="bgselcard">
+                        <td colspan="3">
+                            <ul>
+                                <li onclick="getListPrice('zing');" data-type="zing"><a href="javascript:;" {{zing_current}}><span class="sprtcard logocard zing"></span></a></li>
+                                <li onclick="getListPrice('garena');" data-type="garena"><a href="javascript:;" {{garena_current}}><span class="sprtcard logocard garena"></span></a></li>
+                                <li onclick="getListPrice('vtc');" data-type="vtc"><a href="javascript:;" {{vtc_current}}><span class="sprtcard logocard vtc"></span></a></li>
+                                <li onclick="getListPrice('gate');" data-type="gate"><a href="javascript:;" {{gate_current}}><span class="sprtcard logocard gate"></span></a></li>
+                                <li onclick="getListPrice('ongame');" data-type="ongame"><a href="javascript:;" {{ongame_current}}><span class="sprtcard logocard ongame"></span></a></li>
+                                <li onclick="getListPrice('mobay');" data-type="mobay"><a href="javascript:;" {{mobay_current}}><span class="sprtcard logocard mobay"></span></a></li>
+                                <li onclick="getListPrice('bit');" data-type="bit"><a href="javascript:;" {{bit_current}}><span class="sprtcard logocard bit"></span></a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    {{list_price_card}}
+                </tbody>
+            </table>
+            {{/GAME_PRICE}}
+            {{#ZINGXU}}
+            <h3>Bảng giá ZingXu</h3>
             <table width="100%" border="0" cellspacing="0" cellpadding="5">
-                <tbody><tr class="titletbl">
-                        <td>Mệnh giá</td>
+                <tbody><tr class="bgselcard">
+                        <td colspan="3">
+                            <ul>
+                                <li><a class="current" href="javascript:;"><span class="sprtcard logocard zingxu"></span></a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="txtprotbl">
+                        <td colspan="2"><strong>1 ZingXu</strong> giá <strong>100</strong> VNĐ</td>
+                    </tr>
+                    <tr class="titletbl">
+                        <td>ZingXu</td>
                         <td>Giá bán</td>
                     </tr>
-                    <tr class="txtprotbl">
-                        <td colspan="2">Giảm giá <span>4%</span>  thẻ <strong>VIETTEL, MOBI, VINA</strong></td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>10.000</td>
-                        <td>9.600</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>20.000</td>
-                        <td>19.200</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>50.000</td>
-                        <td>48.000</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>100.000</td>
-                        <td>96.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>200.000</td>
-                        <td>196.000</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>300.000</td>
-                        <td>288.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>500.000</td>
-                        <td>480.000</td>
-                    </tr>
-                    <tr class="txtprotbl">
-                        <td colspan="2">Giảm giá <span>5%</span>  thẻ <strong>GMOBILE, VNMOBILE</strong></td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>10.000</td>
-                        <td>9.500</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>20.000</td>
-                        <td>19.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>50.000</td>
-                        <td>47.500</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>100.000</td>
-                        <td>95.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl">
-                        <td>200.000</td>
-                        <td>190.000</td>
-                    </tr>
-                    <tr class="bggreytbl">
-                        <td>300.000</td>
-                        <td>285.000</td>
-                    </tr>
-                    <tr class="bgwhitetbl end">
-                        <td>500.000</td>
-                        <td>475.000</td>
-                    </tr>
-                </tbody></table>
+                    {{list_price_zx}}
+                </tbody>
+            </table>
+            {{/ZINGXU}}
         </div>
     </div>
 </div>

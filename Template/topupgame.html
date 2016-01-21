@@ -1,5 +1,5 @@
 <div class="wrap">
-    <div class="localpath"><a href="#">Trang chủ</a><span class="sprt icolocalpath"></span><a href="#">Nạp tiền game</a><span class="sprt icolocalpath"></span><em>ZingXu</em></div>
+    <div class="localpath"><a href="/">Trang chủ</a><span class="sprt icolocalpath"></span><a href="/">Nạp tiền game</a><span class="sprt icolocalpath"></span><em>ZingXu</em></div>
     <div class="boxcontent clearfix">
         <div class="colfrist fl">
             <div class="bxcontent">
@@ -15,15 +15,10 @@
                     <span class="row_rd">&nbsp;</span>
                 </div>
                 <div class="row">
-                    <span class="row_st">Số ZingXu</span>
+                    <span class="row_st">Mệnh giá</span>
                     <span class="row_nd">
-                        <select id="quantity" onchange="calTotalAmountZX();">
-                            <option value="500">500</option>
-                            <option value="1000">1.000</option>
-                            <option value="2000">2.000</option>
-                            <option value="3000">3.000</option>
-                            <option value="5000">5.000</option>
-                            <option value="10000">10.000</option>
+                        <select id="pricezx" onchange="calTotalAmountZX();">
+                            {{list_zx}}
                         </select>
                     </span>
                     <span class="row_rd">&nbsp;</span>
@@ -55,7 +50,7 @@
                         <td colspan="2"><strong>1 ZingXu</strong> giá <strong>100</strong> VNĐ</td>
                     </tr>
                     <tr class="titletbl">
-                        <td>ZingXu</td>
+                        <td>Mệnh giá</td>
                         <td>Giá bán</td>
                     </tr>
                     {{list_price_zx}}
