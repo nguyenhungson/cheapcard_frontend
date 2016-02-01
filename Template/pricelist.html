@@ -1,0 +1,97 @@
+<div class="wrap">
+    <div class="localpath"><a href="/">Trang chủ</a><span class="sprt icolocalpath"></span><a href="/thongtin/banggia.html"><em>Bảng giá</em></a></div>
+    <ul class="tabprice clearfix" id="menuPrice">
+        <li onclick="clickPrice('#mobile', this)"><a href="javascript:;"><span class="imgtabprice tel"></span></a></li>
+        <li onclick="clickPrice('#game', this)"><a href="javascript:;"><span class="imgtabprice game"></span></a></li>
+        <li onclick="clickPrice('#zingxu', this)"><a href="javascript:;"><span class="imgtabprice zxu"></span></a></li>
+    </ul>
+    <table width="100%" border="1" cellspacing="0" cellpadding="0" class="tableprice" id="game" style="display: none">
+        <tbody>
+            <tr class="header">
+                <th scope="col">Mã Thẻ Game</th>
+                <th scope="col">Mệnh giá thẻ</th>
+                <th scope="col">Giá bán/thẻ (VNĐ)</th>
+            </tr>
+            <tr class="headline">
+                <td rowspan="7"><b>Thẻ VTC Online</b>
+                    <p>Audition, CF, Fifa, Mobifone, Vinaphone, 
+                        Viettel…</p></td>
+            </tr>
+            {{vtc_list}}
+            <tr class="headline">
+                <td rowspan="5"><b>Thẻ Zing - VNG</b>
+                    <p>Võ lâm, Chinh đồ, Phong thần, Boom…</p></td>
+            </tr>
+            {{zing_list}}
+            <tr class="headline">
+                <td rowspan="6"><b>Thẻ Gate</b>
+                    <p>Thiên long bát bộ, MU, PTV…</p></td>
+            </tr>
+            {{gate_list}}
+            <tr class="headline">
+                <td rowspan="4"><b>Thẻ On Đa năng</b>
+                    <p>Ongame</p></td>
+            </tr>
+            {{on_list}}
+            <tr class="headline">
+                <td rowspan="8"><b>Thẻ BIT</b>
+                    <p>Nạp cho các dịch vụ được tích hợp thanh toán trực tiếp <br>của các nhà phát hành: Cửu Âm, Tuyệt tác Tu Tiên, iwin, Au, mobile…</p></td>
+            </tr>
+            {{bit_list}}
+            <tr class="headline">
+                <td rowspan="6"><b>Thẻ Garena</b>
+                    <p>Liên minh huyền thoại ...</p></td>
+            </tr>
+            {{garena_list}}
+            <tr class="headline">
+                <td rowspan="5"><b>Thẻ MOBAY - Minh Châu</b>
+                    <p>Bất bại, Võ lâm 3…</p></td>
+            </tr>
+            {{mobay_list}}
+        </tbody>
+    </table>
+    <table width="100%" border="1" cellspacing="0" cellpadding="0" class="tableprice" id="zingxu" style="display: none">
+        <tbody>
+            <tr class="header">
+                <th scope="col">&nbsp;</th>
+                <th scope="col">Mệnh giá (VNĐ)</th>
+                <th scope="col">Giá bán (VNĐ)</th>
+            </tr>
+            <tr class="headline">
+                <td rowspan="9">
+                    <b>ZingXu</b>
+                </td>
+            </tr>
+            {{zingxu_list}}
+        </tbody>
+    </table>
+    <table width="100%" border="1" cellspacing="0" cellpadding="0" class="tableprice" id="mobile" style="display: none">
+        <tbody>
+            <tr class="header">
+                <th scope="col">Mã Thẻ Điện thoại</th>
+                <th scope="col">Mệnh giá thẻ</th>
+                <th scope="col">Giá bán/thẻ (VNĐ)</th>
+            </tr>
+            <tr>
+                <td rowspan="6"><b>Mobi</b></td>
+            </tr>
+            {{mobifone_list}}
+            <tr>
+                <td rowspan="6"><b>Vina</b></td>
+            </tr>
+            {{vinaphone_list}}
+            <tr>
+                <td rowspan="6"><b>Viettel</b></td>
+            </tr>
+            {{viettel_list}}
+            <tr>
+                <td rowspan="3"><b>Vietnamobile</b></td>
+            </tr>
+            {{vietnamobile_list}}
+            <tr>
+                <td rowspan="3"><b>Gmobile</b></td>
+            </tr>
+            {{gmobile_list}}
+        </tbody>
+    </table>
+</div>

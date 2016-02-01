@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -98,6 +99,7 @@ public class PaymentController extends HttpServlet {
                 String type = arrParam[3];
                 String status = req.getParameter("status") == null ? "0" : req.getParameter("status");
                 int isGetCard = 0;
+                String supplier = "";
 
                 if (type.equals("zx")) {
                     myDic.setVariable("title", "Nạp tiền ZingXu");
@@ -122,8 +124,6 @@ public class PaymentController extends HttpServlet {
                             rspCode = responseAPI.getCode();
                         }
 
-                        String supplier = "viettel";
-
                         if (rspCode == 1) {
                             String htmlCard = "";
                             OrderStatusResp orderResp = responseAPI.getData();
@@ -144,35 +144,50 @@ public class PaymentController extends HttpServlet {
                                             + "</tr>";
                                 }
                             }
-
-                            Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
-                            Iterator it = mapListItem.entrySet().iterator();
-                            int typeId = 0;
-                            while (it.hasNext()) {
-                                Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
-                                if (pair.getValue().getSupplier().equals(supplier)) {
-                                    typeId = pair.getValue().getTypeId();
-                                    break;
-                                }
-                            }
-
-                            if (typeId == 2) {
-                                myDic.showSection("CARD_PRICE");
-                            } else {
-                                myDic.showSection("GAME_PRICE");
-                            }
-                            myDic.setVariable(supplier + "_current", "class=\"current\"");
-                            myDic.setVariable("list_price_card", BusinessProcess.renderListPriceCard(mapListItem, typeId, supplier));
-
+                            
                             myDic.setVariable("list_card", htmlCard);
                             myDic.showSection("CARD");
                         }
-                    } else {
-                        myDic.showSection("OTHER");
-                        myDic.showSection("ZINGXU");
-                        myDic.setVariable("list_price_zx", BusinessProcess.renderListPriceZX());
+                    } 
+                }
+                
+                //Show bang gia
+                if(supplier.equals("")){
+                    Cookie cookies[] = req.getCookies();
+                    for(Cookie cookieItem : cookies){
+                        if(cookieItem.getName().equals("supplier")){
+                            supplier = cookieItem.getValue();
+                            break;
+                        }
                     }
                 }
+                
+                if (type.equals("card")) {                    
+                    Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
+                    Iterator it = mapListItem.entrySet().iterator();
+                    int typeId = 0;
+                    while (it.hasNext()) {
+                        Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
+                        if (pair.getValue().getSupplier().equals(supplier)) {
+                            typeId = pair.getValue().getTypeId();
+                            break;
+                        }
+                    }
+
+                    if (typeId == 2) {
+                        myDic.showSection("CARD_PRICE");
+                    } else {
+                        myDic.showSection("GAME_PRICE");
+                    }
+                    myDic.setVariable(supplier + "_current", "class=\"current\"");
+                    myDic.setVariable("list_price_card", BusinessProcess.renderListPriceCard(mapListItem, typeId, supplier));
+                }
+                else{
+                    myDic.showSection("OTHER");
+                    myDic.showSection("ZINGXU");
+                    myDic.setVariable("list_price_zx", BusinessProcess.renderListPriceZX());
+                }
+                
 
                 myDic.setVariable("status", info);
                 myDic.setVariable("order_no", transId);
@@ -292,9 +307,7 @@ public class PaymentController extends HttpServlet {
 
             String strResult = APISale.createOrder(bankId, totalAmount, "", "", "", "", listDetail, bankCode, ip, buyer);
             OrderCreateResp resp = gson.fromJson(strResult, OrderCreateResp.class);
-            if (resp.getCode() == 1) {
-                result = resp.getData().getUrl();
-            }
+            result = gson.toJson(resp);
         } else if (pathInfo.equals("/xuatexcel.html")) {
             TemplateDataDictionary myDic = TemplateDictionary.create();
             String exportExcel = this.renderExcel(req);

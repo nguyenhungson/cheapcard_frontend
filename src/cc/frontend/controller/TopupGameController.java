@@ -34,7 +34,7 @@ public class TopupGameController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            String content = this.renderHtml(req);
+            String content = this.renderHtml(req, resp);
             if (!content.equals("")) {
                 Utils.out(content, resp);
             }
@@ -55,7 +55,7 @@ public class TopupGameController extends HttpServlet {
         }
     }
 
-    private String renderHtml(HttpServletRequest req) throws Exception {
+    private String renderHtml(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         TemplateDataDictionary myDic = TemplateDictionary.create();
         List<Item> listItem = this.getZXInfo();
         //myDic.setVariable("zx_price", String.valueOf(itemZx.getDiscountPercent()));

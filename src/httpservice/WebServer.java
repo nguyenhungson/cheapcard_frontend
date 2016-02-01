@@ -2,6 +2,7 @@ package httpservice;
 
 import cc.frontend.common.TGRConfig;
 import cc.frontend.controller.IndexController;
+import cc.frontend.controller.InfoController;
 import cc.frontend.controller.PaymentController;
 import cc.frontend.controller.SaleCardController;
 import cc.frontend.controller.TopupGameController;
@@ -68,7 +69,8 @@ public class WebServer extends Thread {
         handler.addServlet(SaleCardController.class, "/banthe/*");
         handler.addServlet(PaymentController.class, "/thanhtoan/*");
         handler.addServlet(TopupGameController.class, "/naptiengame/*");
-        handler.addServlet(IndexController.class, "/*");
+        handler.addServlet(InfoController.class, "/thongtin/*");
+        handler.addServlet(IndexController.class, "/");
 
         server.setStopAtShutdown(true);
         server.setSendServerVersion(true);

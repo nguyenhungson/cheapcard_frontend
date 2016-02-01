@@ -5,6 +5,8 @@
  */
 package cc.frontend.entity;
 
+import java.util.List;
+
 /**
  *
  * @author viettd
@@ -12,6 +14,15 @@ package cc.frontend.entity;
 public class OrderCreateData {
     private String orderNo;
     private String url;
+    private List<OrderDetail> lstOFS;
+
+    public List<OrderDetail> getLstOFS() {
+        return lstOFS;
+    }
+
+    public void setLstOFS(List<OrderDetail> lstOFS) {
+        this.lstOFS = lstOFS;
+    }
 
     public String getOrderNo() {
         return orderNo;

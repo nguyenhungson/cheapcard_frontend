@@ -12,10 +12,10 @@ import cc.frontend.entity.Item;
 import hapax.TemplateDataDictionary;
 import hapax.TemplateDictionary;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +34,7 @@ public class SaleCardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            String content = this.renderHtml(req);
+            String content = this.renderHtml(req, resp);
             if (!content.equals("")) {
                 Utils.out(content, resp);
             }
@@ -55,9 +55,14 @@ public class SaleCardController extends HttpServlet {
         }
     }
 
-    private String renderHtml(HttpServletRequest req) throws Exception {
+    private String renderHtml(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         String pathInfo = req.getPathInfo() != null ? req.getPathInfo() : "";
         String supplier = pathInfo.substring(1);
+        Cookie cookie = new Cookie("supplier", supplier);
+        cookie.setMaxAge(60*20);
+        cookie.setPath("/");
+        resp.addCookie(cookie);
+        
         Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
         Iterator it = mapListItem.entrySet().iterator();
         int typeId = 0;

@@ -59,6 +59,10 @@ public class BusinessProcess {
     }
 
     public static Map<String, String> addListPrice(Map<Integer, Item> mapListItem, int typeId, String supplier) throws Exception {
+        if(supplier.equals("")){
+            supplier = "zxu";
+        }
+        
         Iterator it = mapListItem.entrySet().iterator();
         Map<String, String> mapListPrice = new HashMap<>();
         Map<String, Integer> mapIndex = new HashMap<>();
