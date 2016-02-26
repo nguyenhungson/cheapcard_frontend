@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="keywords" content="mua zingxu, mua thẻ điện thoại, nạp tiền mobifone, nạp tiền mobi, nạp tiền viettel, nạp tiền vina, nạp tiền vinaphone, mua thẻ game, thẻ zing, thẻ vtc, thẻ garena, thẻ bit, thẻ on, thẻ mobay" />	
-	<meta name="description" content="Mua online thẻ điện thoại, thẻ game, zingxu ...Thanh toán bằng thẻ ATM, visa, master..v.v. Không cần tạo tài khoản, an toàn, đơn giản, tiện lợi" />
-		<link rel="icon" type="image/png" href="{{static_url}}/images/favicon.ico" />
+        <meta name="description" content="Mua online thẻ điện thoại, thẻ game, zingxu ...Thanh toán bằng thẻ ATM, visa, master..v.v. Không cần tạo tài khoản, an toàn, đơn giản, tiện lợi" />
+        <link rel="icon" type="image/png" href="{{static_url}}/images/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="{{static_url}}/css/jcarousel.responsive.css?version={{static_version}}" />
         <link rel="stylesheet" type="text/css" href="{{static_url}}/css/screen.css?version={{static_version}}" />
         <script type="text/javascript" src="{{static_url}}/js/jquery-1.11.1.js"></script>
@@ -14,20 +15,20 @@
         <script type="text/javascript" src="{{static_url}}/js/common.js?version={{static_version}}"></script>
         <script type="text/javascript" src="{{static_url}}/js/script.js?version={{static_version}}"></script>
         <script>
-            (function (i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                        m = s.getElementsByTagName(o)[0];
-                a.async = 1;
-                a.src = g;
-                m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+(function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m)
+})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-            ga('create', 'UA-73024794-1', 'auto');
-            ga('send', 'pageview');
+ga('create', 'UA-73024794-1', 'auto');
+ga('send', 'pageview');
 
         </script>
         <title>Thẻ Giá Rẻ - Mua lẻ với giá sỉ</title>
@@ -41,9 +42,12 @@
                 </ul>
             </div>
         </div>
+        <div class="mtop">
+            {{mobile_top}}
+        </div>
         <div class="menu">
             <div class="wrap">
-                <a href="#"><span class="btn_fp"></span></a>
+                <a href="https://www.facebook.com/thegiare.vn/" target="_blank"><span class="btn_fp"></span></a>
                 <ul>
                     <li><a class="current" href="/"><span class="sprt icohome"></span></a></li>
                     <li><a href="#">TIN TỨC</a></li>
@@ -55,13 +59,13 @@
         <div class="hotnews">
             <div class="wrap">Không cần tạo tài khoản: <strong>AN TOÀN - ĐƠN GIẢN - GIÁ RẺ.</strong></div>
         </div>
-        <div class="main clearfix">
+        <div class="main home clearfix">
             {{main_content}}
         </div>
         <div class="footer clearfix">
             <div class="wrap">
                 <h4>HỖ TRỢ THANH TOÁN</h4>
-                <div class="jcarousel-wrapper">
+                <div class="jcarousel-wrapper ft_desktop">
                     <div class="boxbank clearfix jcarousel" data-jcarousel="true">
                         <ul>
                             {{list_bank}}
@@ -72,10 +76,8 @@
                 </div>
                 <div class="boxend">
                     <p class="fl">
-                        Copyright by @Thẻ Giá Rẻ 2016<br>
-                            All rights reserved
-                            <!--Bản quyền của <b>Công ty TNHH Giải Pháp Phần Mềm PTA Việt Nam</b><br>
-                                Giấy phép kinh doanh số 0312401085-->
+                        <b>Công ty TNHH Giải Pháp Phần Mềm PTA Việt Nam</b><br>
+                            Giấy phép kinh doanh số 0312401085
                     </p>
                     <p class="fr"><a href="#"><span class="sprt logobct"></span></a></p>
                 </div>

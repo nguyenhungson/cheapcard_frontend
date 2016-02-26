@@ -59,16 +59,16 @@ public class SaleCardController extends HttpServlet {
         String pathInfo = req.getPathInfo() != null ? req.getPathInfo() : "";
         String supplier = pathInfo.substring(1);
         Cookie cookie = new Cookie("supplier", supplier);
-        cookie.setMaxAge(60*20);
+        cookie.setMaxAge(60 * 20);
         cookie.setPath("/");
         resp.addCookie(cookie);
-        
+
         Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
         Iterator it = mapListItem.entrySet().iterator();
         int typeId = 0;
         while (it.hasNext()) {
             Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
-            if(pair.getValue().getSupplier().equals(supplier)){
+            if (pair.getValue().getSupplier().equals(supplier)) {
                 typeId = pair.getValue().getTypeId();
                 break;
             }
@@ -76,19 +76,70 @@ public class SaleCardController extends HttpServlet {
 
         TemplateDataDictionary myDic = TemplateDictionary.create();
         myDic.setVariable("card_name", WordUtils.capitalize(pathInfo.substring(1)));
-        myDic.setVariable("list_card", this.renderListItem(pathInfo));
+        myDic.setVariable("list_card", this.renderListItem(pathInfo, mapListItem));
+        myDic.setVariable("list_card_mobile", this.renderHtmlMobile(pathInfo, mapListItem));
         myDic.setVariable("list_price_card", BusinessProcess.renderListPriceCard(mapListItem, typeId, supplier));
-        if(typeId == 2){
+        if (typeId == 2) {
             myDic.showSection("CARD_PRICE");
-        }
-        else{
+        } else {
             myDic.showSection("GAME_PRICE");
         }
         myDic.setVariable(supplier + "_current", "class=\"current\"");
         String mainContent = Utils.renderTemplate("Template/salecard.html", myDic);
 
+        String linkTitle = "/?m=" + typeId;
+        String strTitle = "điện thoại";
+        if (typeId == 1) {
+            strTitle = "game";
+        }
+        String mobileTop = "<a class=\"mmenu\" href=\"" + linkTitle + "\"><span class=\"msprt micoback\"></span> Mua thẻ " + strTitle + "</a>";
+        myDic.setVariable("mobile_top", mobileTop);
+
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
+    }
+
+    private String renderHtmlMobile(String pathInfo, Map<Integer, Item> mapItem) {
+        String html = "";
+        if (mapItem != null) {
+            Iterator it = mapItem.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
+                String cardType = pathInfo.substring(1);
+                if (cardType.equals(pair.getValue().getSupplier())) {
+                    html += "<div class=\"rowcard clearfix\">"
+                            + "<input type=\"hidden\" value=\"" + pair.getValue().getId() + "\" />"
+                            + "<div class=\"boxcard fl\" style=\"display: block\">"
+                            + "<a class=\"imgcard card" + pair.getValue().getUnitPrice() / 1000 + "k\" href=\"javascript:;\" onclick=\"chooseCard(this, 1, 0, 'mobile');\">"
+                            + "<span class=\"msprt micocard list " + pair.getValue().getSupplier() + "\"></span>"
+                            + "<em>" + Utils.formatNumber(pair.getValue().getUnitPrice()) + " <i>VNĐ</i></em>"
+                            + "</a>"
+                            + "</div>"
+                            + "<div class=\"coldecrease fl\">"
+                            + "<a href=\"javascript:;\" onclick=\"decreaseQuantity(this, 'mobile');\"><span class=\"sprt icodecrease\"></span></a>"
+                            + "</div>"
+                            + "<div class=\"colinput fl\"><input type=\"text\" value=\"0\" placeholder=\"0\" onblur=\"chooseCard(this, 0, 0, 'mobile');\"></div>"
+                            + "<div class=\"colincrease fl\"><a href=\"javascript:;\" onclick=\"increaseQuantity(this, 'mobile');\"><span class=\"sprt icoincrease\"></span></a></div>"
+                            + "<div class=\"colmoney fl\"><label>0</label> <span>VNĐ</span><input type=\"hidden\" value=\"" + pair.getValue().getDiscountAmount() + "\"></div>"
+                            + "</div>";
+                    /*"<tr>"
+                            + "<td class=\"boxcard\">"
+                            + "<input type=\"hidden\" value=\"" + pair.getValue().getId() + "\" />"
+                            + "<a class=\"imgcard card" + pair.getValue().getUnitPrice() / 1000 + "k\" href=\"javascript:;\" onclick=\"chooseCard(this, 1, 0);\">"
+                            + "<span class=\"sprtcard logocard " + pair.getValue().getSupplier() + "\"></span>"
+                            + "<em>" + Utils.formatNumber(pair.getValue().getUnitPrice()) + " <i>VNĐ</i></em>"
+                            + "</a>"
+                            + "</td>"
+                            + "<td class=\"coldecrease\"><a href=\"javascript:;\" onclick=\"decreaseQuantity(this);\"><span class=\"sprt icodecrease\"></span></a></td>"
+                            + "<td class=\"colinput\"><input type=\"text\" value=\"0\" placeholder=\"0\" maxlength=\"3\" onblur=\"chooseCard(this, 0, 0);\"></td>"
+                            + "<td class=\"colincrease\"><a href=\"javascript:;\" onclick=\"increaseQuantity(this);\"><span class=\"sprt icoincrease\"></span></a></td>"
+                            + "<td class=\"colmoney\"><label>0</label> <span>VNĐ</span><input type=\"hidden\" value=\"" + pair.getValue().getDiscountAmount() + "\"></td>"
+                            + "</tr>";*/
+                }
+            }
+        }
+
+        return html;
     }
 
     private String renderPost(HttpServletRequest req) throws Exception {
@@ -120,8 +171,7 @@ public class SaleCardController extends HttpServlet {
         return result;
     }
 
-    private String renderListItem(String pathInfo) throws Exception {
-        Map<Integer, Item> mapItem = BusinessProcess.getListItem();
+    private String renderListItem(String pathInfo, Map<Integer, Item> mapItem) throws Exception {
         String html = "";
         if (mapItem != null) {
             Iterator it = mapItem.entrySet().iterator();

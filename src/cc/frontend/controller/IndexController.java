@@ -33,14 +33,10 @@ public class IndexController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            //if (BusinessProcess.checkLogin(req) == 1) {
             String content = this.renderContent(req, resp);
             if (!content.equals("")) {
                 Utils.out(content, resp);
             }
-            /*} else {
-             Utils.urlRedirect(resp, "/logout");
-             }*/
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
         }
@@ -61,37 +57,64 @@ public class IndexController extends HttpServlet {
         } else if (req.getParameter("respType") != null && req.getParameter("respType").equals("json")) {
             content = this.actionResultAjax(req);
         } else {
-            content = this.renderHtml();
+            content = this.renderHtml(req);
         }
 
         return content;
     }
 
-    private String renderHtml() throws Exception {
+    private String renderHtml(HttpServletRequest req) throws Exception {
         TemplateDataDictionary myDic = TemplateDictionary.create();
-        Map<Integer,String> mapHTML = this.renderListItem();//1-the game,2-the dien thoai,3-nap tien game,4-nap tien dien thoai
+        Map<Integer, String> mapHTML = this.renderListItem();//1-the game,2-the dien thoai,3-nap tien game,4-nap tien dien thoai
         
-        if(mapHTML.get(2) != null && !mapHTML.get(2).equals("")){
+        String mobileTop = "<h1 class=\"msprt mlogo\"><a href=\"#\" title=\"\">Thegiare.vn</a></h1>"
+                + "<a class=\"mmenu\" href=\"#\"><span class=\"msprt micomenu\"></span></a>";
+        
+        if (mapHTML.get(2) != null && !mapHTML.get(2).equals("")) {
             myDic.setVariable("list_mobile_card", mapHTML.get(2));
             myDic.showSection("MOBILE_CARD");
         }
-        
-        if(mapHTML.get(1) != null && !mapHTML.get(1).equals("")){
+
+        if (mapHTML.get(1) != null && !mapHTML.get(1).equals("")) {
             myDic.setVariable("list_game_card", mapHTML.get(1));
             myDic.showSection("GAME_CARD");
         }
-        
-        if(mapHTML.get(3) != null && !mapHTML.get(3).equals("")){
+
+        if (mapHTML.get(3) != null && !mapHTML.get(3).equals("")) {
             myDic.setVariable("list_topup_game", mapHTML.get(3));
             myDic.showSection("TOPUP_GAME");
         }
-        
-        if(mapHTML.get(4) != null && !mapHTML.get(4).equals("")){
+
+        if (mapHTML.get(4) != null && !mapHTML.get(4).equals("")) {
             myDic.setVariable("list_topup_mobile", mapHTML.get(4));
             myDic.showSection("TOPUP_MOBILE");
         }
         
+        if(req.getParameter("m") != null){
+            try{
+                int typeHtml = Integer.parseInt(req.getParameter("m"));
+                
+                String strTitle = "điện thoại";
+                if(typeHtml == 1){
+                    strTitle = "game";
+                }
+                mobileTop = "<a class=\"mmenu\" href=\"/\"><span class=\"msprt micoback\"></span> Mua thẻ " + strTitle + "</a>";
+                
+                String htmlListCardTouch = this.renderCardHTMLTouch(typeHtml);
+                myDic.setVariable("list_card_touch", htmlListCardTouch);
+            }
+            catch(Exception ex){
+                
+            }
+            myDic.showSection("LIST_CARD_TOUCH");
+        }
+        else{
+            myDic.showSection("LIST_TYPE_TOUCH");
+        }
+
         String mainContent = Utils.renderTemplate("Template/homepage.html", myDic);
+
+        myDic.setVariable("mobile_top", mobileTop);
         
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
@@ -107,25 +130,24 @@ public class IndexController extends HttpServlet {
 
         return result;
     }
-    
-    private Map<Integer,String> renderListItem() throws Exception{
-        Map<Integer,Item> mapItem = BusinessProcess.getListItem();
-        Map<Integer,String> mapHtml = null; 
-        Map<String,Integer> mapSupplier = new HashMap<>();
-        if(mapItem != null){
+
+    private Map<Integer, String> renderListItem() throws Exception {
+        Map<Integer, Item> mapItem = BusinessProcess.getListItem();
+        Map<Integer, String> mapHtml = null;
+        Map<String, Integer> mapSupplier = new HashMap<>();
+        if (mapItem != null) {
             mapHtml = new HashMap<>();
             Iterator it = mapItem.entrySet().iterator();
-            while(it.hasNext()){
-                Map.Entry<Integer,Item> pair = (Map.Entry) it.next();
+            while (it.hasNext()) {
+                Map.Entry<Integer, Item> pair = (Map.Entry) it.next();
                 int typeId = pair.getValue().getTypeId();
                 String curHtml = mapHtml.get(typeId) != null ? mapHtml.get(typeId) : "";
                 String urlSale = "";
                 String supplier = pair.getValue().getSupplier();
-                if(mapSupplier.get(supplier) == null){
-                    if(typeId == 1 || typeId == 2){
+                if (mapSupplier.get(supplier) == null) {
+                    if (typeId == 1 || typeId == 2) {
                         urlSale = "/banthe/" + supplier;
-                    }
-                    else if(typeId == 3){
+                    } else if (typeId == 3) {
                         urlSale = "/naptiengame/" + supplier;
                     }
                     curHtml += "<li><a href=\"" + urlSale + "\"><span class=\"sprtcard logocard " + pair.getValue().getSupplier() + "\"></span></a></li>";
@@ -134,8 +156,36 @@ public class IndexController extends HttpServlet {
                 }
             }
         }
-        
+
         return mapHtml;
+    }
+    
+    private String renderCardHTMLTouch(int typeHtml) throws Exception{
+        Map<Integer,Item> mapItem = BusinessProcess.getListItem();
+        Map<String,String> mapHtml = null; 
+        String strHtml = "";
+        if(mapItem != null){
+            mapHtml = new HashMap<>();
+            Iterator it = mapItem.entrySet().iterator();
+            while(it.hasNext()){
+                Map.Entry<Integer,Item> pair = (Map.Entry) it.next();
+                String supplier = pair.getValue().getSupplier();
+                int typeId = pair.getValue().getTypeId();
+                
+                String urlSale = "#";
+                if (typeId == 1 || typeId == 2) {
+                    urlSale = "/banthe/" + supplier;
+                } else if (typeId == 3) {
+                    urlSale = "/naptiengame/" + supplier;
+                }
+                if(mapHtml.get(supplier) == null && typeHtml == typeId){
+                    strHtml += "<li><a href=\"" + urlSale + "\"><span class=\"msprt micocard list " + pair.getValue().getSupplier() + "\"></span></a></li>";
+                    mapHtml.put(supplier, strHtml);
+                }
+            }
+        }
+        
+        return strHtml;
     }
 
 }

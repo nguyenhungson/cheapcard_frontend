@@ -3,7 +3,7 @@
     <div class="boxcontent clearfix">
         <div class="colfrist fl">
             <div class="bxcontent card">
-                <table width="100%" border="0" cellspacing="0" cellpadding="10" id="tableSaleCard">
+                <table width="100%" border="0" cellspacing="0" cellpadding="10" id="tableSaleCard" class="salecard_desktop">
                     <tbody>
                         {{list_card}}
                         <tr>
@@ -11,7 +11,15 @@
                             <td colspan="3" class="coltotal" align="right">Thanh toán: <span id="totalAmount">0</span> <em>VNĐ</em></td>
                             <td align="right"><a class="btnaction" href="javascript:;" onclick="acceptChooseCard();">Tiếp tục</a></td>
                         </tr>
-                    </tbody></table>
+                    </tbody>
+                </table>
+                <div class="salecard_mobile" id="mListCard">
+                    {{list_card_mobile}}
+                    <div class="rowendtbl">
+                        Thanh toán: <span id="mTotalAmount">0 <em>VNĐ</em></span>
+                        <a class="btnaction" href="#">Tiếp tục</a>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="colsecond fr">
@@ -41,7 +49,7 @@
                     <tr class="bgselcard">
                         <td colspan="3">
                             <ul>
-                            	<li onclick="getListPrice('zing');" data-type="zing"><a href="javascript:;" {{zing_current}}><span class="sprtcard logocard zing"></span></a></li>
+                                <li onclick="getListPrice('zing');" data-type="zing"><a href="javascript:;" {{zing_current}}><span class="sprtcard logocard zing"></span></a></li>
                                 <li onclick="getListPrice('garena');" data-type="garena"><a href="javascript:;" {{garena_current}}><span class="sprtcard logocard garena"></span></a></li>
                                 <li onclick="getListPrice('vtc');" data-type="vtc"><a href="javascript:;" {{vtc_current}}><span class="sprtcard logocard vtc"></span></a></li>
                                 <li onclick="getListPrice('gate');" data-type="gate"><a href="javascript:;" {{gate_current}}><span class="sprtcard logocard gate"></span></a></li>
