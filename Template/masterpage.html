@@ -8,10 +8,12 @@
         <link rel="icon" type="image/png" href="{{static_url}}/images/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="{{static_url}}/css/jcarousel.responsive.css?version={{static_version}}" />
         <link rel="stylesheet" type="text/css" href="{{static_url}}/css/screen.css?version={{static_version}}" />
+        <link rel="stylesheet" type="text/css" href="{{static_url}}/slidebars/slidebars.css?version={{static_version}}" />
         <script type="text/javascript" src="{{static_url}}/js/jquery-1.11.1.js"></script>
         <script type="text/javascript" src="{{static_url}}/js/jquery.jcarousel.min.js"></script>
         <script type="text/javascript" src="{{static_url}}/js/jcarousel.responsive.js"></script>
-        <script type="text/javascript" src="{{static_url}}/js/ZeroClipboard.js?v={{static_version}}"></script>
+        <script type="text/javascript" src="{{static_url}}/js/clipboard.min.js?v={{static_version}}"></script>
+        <script type="text/javascript" src="{{static_url}}/slidebars/slidebars.js?v={{static_version}}"></script>
         <script type="text/javascript" src="{{static_url}}/js/common.js?version={{static_version}}"></script>
         <script type="text/javascript" src="{{static_url}}/js/script.js?version={{static_version}}"></script>
         <script>
@@ -36,7 +38,7 @@ ga('send', 'pageview');
     <body>
         <div class="top">
             <div class="wrap">
-                <h1 class="logo"><a href="/" title="Trang chủ"><img src="{{static_url}}/images/logo.png" alt=""></a></h1>
+        	<h1 class="logo"><a href="/" title="Trang chủ"><span class="logo"></span></a></h1>
                 <ul>
                     {{list_news}}
                 </ul>
@@ -79,7 +81,7 @@ ga('send', 'pageview');
                         <b>Công ty TNHH Giải Pháp Phần Mềm PTA Việt Nam</b><br>
                             Giấy phép kinh doanh số 0312401085
                     </p>
-                    <p class="fr"><a href="#"><span class="sprt logobct"></span></a></p>
+                    <!--<p class="fr"><a href="#"><span class="sprt logobct"></span></a></p>-->
                 </div>
             </div>
         </div>
@@ -99,6 +101,24 @@ ga('send', 'pageview');
                         <a href="javascript:;" class="cancelbtn" onclick="closePopup();">Đóng</a>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="sb-slidebar sb-left sb-style-push">
+            <div class="mleftmenu">
+                <div class="mtop">
+                    <h1 class="msprt mlogo"><a href="/" title="">Thegiare.vn</a></h1>
+                    <a class="mmenu sb-toggle-left" href="javascript:;"><span class="msprt micoclose"></span></a>
+                </div>
+                <ul>
+                    <li><a href="/"><span class="mctnico"><span class="mcircle mhome"><span class="msprt micohome"></span></span></span>Trang chủ</a></li>
+                    <li><a href="/?m=2"><span class="mctnico"><span class="mcircle mtel"><span class="msprt micotel"></span></span></span>Mua mã thẻ điện thoại</a></li>
+                    <li><a href="/?m=1"><span class="mctnico"><span class="mcircle mgame"><span class="msprt micogame"></span></span></span>Mua mã thẻ game</a></li>
+                    <li><a href="/naptiengame/zxu"><span class="mctnico"><span class="mcircle mzxu"><span class="msprt micozxu"></span></span></span>Nạp tiền game</a></li>
+                    <li><a href="/thongtin/banggia.html"><span class="mctnico"><span class="mcircle mprice"><span class="msprt micoprice"></span></span></span>Bảng giá</a></li>
+                    <li><a href="https://www.facebook.com/thegiare.vn/" target="_blank"><span class="mctnico"><span class="mcircle mfacebook"><span class="msprt micofacebook"></span></span></span>Chúng tôi trên Facebook</a></li>
+                    <li class="mhot"><a href="tel:0966773668"><span class="mctnico"><span class="mcircle mhotline"><span class="msprt micohotline"></span></span></span>0966 773 668 <em>HOTLINE (Zalo/Viber)</em></a></li>
+                    <li class="mend"><span class="fl">PTA Viet Nam © 2016</span><span class="sprt logobct fr"></span></li>
+                </ul>
             </div>
         </div>
     </body>

@@ -171,20 +171,20 @@ public class Utils {
 
         return template.renderToString(myDic);
     }
-    
-    public static String renderTemplateMasterpage(String mainContent, TemplateDataDictionary myDic) throws Exception{
+
+    public static String renderTemplateMasterpage(String mainContent, TemplateDataDictionary myDic) throws Exception {
         myDic.setVariable("list_news", Utils.getListNews());
         myDic.setVariable("main_content", mainContent);
         List<Bank> listBank = Utils.getListBank();
         String htmlBank = "";
-        for(Bank item : listBank){
+        for (Bank item : listBank) {
             htmlBank += "<li><a href=\"javascript:;\"><span class=\"sprtbank logobank " + item.getImageFile() + "\"></span></a></li>";
         }
         myDic.setVariable("list_bank", htmlBank);
         String masterPage = Utils.renderTemplate("Template/masterpage.html", myDic);
         return masterPage;
     }
-    
+
     public static List<Bank> getListBank() throws Exception {
         ResponseBank response = new Gson().fromJson(APISale.getListBank(), ResponseBank.class);
         if (response.getCode() == 1) {
@@ -193,33 +193,32 @@ public class Utils {
         }
         return null;
     }
-    
-    public static String render404Page(TemplateDataDictionary myDic) throws Exception{
+
+    public static String render404Page(TemplateDataDictionary myDic) throws Exception {
         String masterPage = Utils.renderTemplate("Template/404.html", myDic);
         return masterPage;
     }
-    
-    public static String getListNews(){
+
+    public static String getListNews() {
         Object objListNews = LocalCache.getInstance().getObjectCache("listNews");
         String listNews = "";
-        if(objListNews != null){
+        if (objListNews != null) {
             listNews = objListNews.toString();
-        }
-        else{
+        } else {
             listNews = Utils.readFile("File/news.txt");
             LocalCache.getInstance().setObjectCache("listNews", listNews, 5 * 60 * 1000);
         }
-        
+
         String htmlNews = "";
-        
+
         News news = new Gson().fromJson(listNews, News.class);
         List<NewsDetail> list = news.getNews();
-        for(NewsDetail item : list){
+        for (NewsDetail item : list) {
             htmlNews += "<li><p>"
                     + "<a href=\"" + item.getLink() + "\">" + item.getContent() + "</a>"
                     + "</p></li>";
         }
-        
+
         return htmlNews;
     }
 
@@ -227,6 +226,10 @@ public class Utils {
         String ipAddress = req.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
             ipAddress = req.getRemoteAddr();
+        }
+        
+        if(ipAddress.split(",").length > 1){
+            ipAddress = ipAddress.split(",")[0];
         }
 
         return ipAddress;
@@ -456,7 +459,7 @@ public class Utils {
             response.append(inputLine);
         }
         in.close();
-        
+
         return response.toString();
     }
 
@@ -486,10 +489,10 @@ public class Utils {
 
         return null;
     }
-    
-    public static String callAPIRestObject(String url, Object req) throws Exception{
+
+    public static String callAPIRestObject(String url, Object req) throws Exception {
         String result = "";
-        
+
         RequestConfig requestConfig = RequestConfig.custom()
                 .setSocketTimeout(90000)
                 .setConnectTimeout(90000)
@@ -498,7 +501,7 @@ public class Utils {
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Content-Type", "application/json;charset=UTF-8");
         httpPost.setHeader("Charset", "UTF-8");
-        
+
         httpPost.setEntity(new StringEntity(new Gson().toJson(req), "UTF-8"));
         try (CloseableHttpResponse res = httpclient.execute(httpPost)) {
             int statusCode = res.getStatusLine().getStatusCode();
@@ -508,7 +511,7 @@ public class Utils {
                 result = IOUtils.toString(inputStream, "UTF-8");
             }
         }
-        
+
         return result;
     }
 

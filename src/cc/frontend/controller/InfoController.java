@@ -18,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 /**
@@ -77,6 +76,10 @@ public class InfoController extends HttpServlet {
         } else {
             infoTemplate = Utils.render404Page(myDic);
         }
+        
+        String mobileTop = "<h1 class=\"msprt mlogo\"><a href=\"/\" title=\"\">Thegiare.vn</a></h1>"
+                + "<a class=\"mmenu sb-toggle-left\" href=\"javascript:;\"><span class=\"msprt micomenu\"></span></a>";
+        myDic.setVariable("mobile_top", mobileTop);
 
         String content = Utils.renderTemplateMasterpage(infoTemplate, myDic);
 

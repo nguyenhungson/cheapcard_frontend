@@ -64,6 +64,9 @@ public class TopupGameController extends HttpServlet {
         myDic.setVariable("list_zx", this.renderListZX(listItem));
         String mainContent = Utils.renderTemplate("Template/topupgame.html", myDic);
 
+        String mobileTop = "<a class=\"mmenu\" href=\"/\"><span class=\"msprt micoback\"></span> Nạp tiền game</a>";
+        myDic.setVariable("mobile_top", mobileTop);
+
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
     }
@@ -99,14 +102,17 @@ public class TopupGameController extends HttpServlet {
 
         return item;
     }
-    
-    private String renderListZX(List<Item> listItem){
+
+    private String renderListZX(List<Item> listItem) {
         String html = "";
-        
-        for(Item item : listItem){
-            html += "<option value=\"" + item.getDiscountAmount() + "|" + item.getId() + "\">" + Utils.formatNumber(item.getUnitPrice())+ "</option>";
+
+        for (int i = 0; i < listItem.size(); i++) {
+            html += "<li onclick=\"choosePriceRadio(this);\">"
+                    + "<span class=\"zpsprt icncheck\"></span>"
+                    + "<input type=\"radio\" name=\"radiolist\" id=\"r" + i + "\" value=\"" + listItem.get(i).getDiscountAmount() + "|" + listItem.get(i).getId() + "\">"
+                    + "<label for=\"r" + i + "\"><span class=\"radio\"></span>" + Utils.formatNumber(listItem.get(i).getUnitPrice()) + "</label></li>";
         }
-        
+
         return html;
     }
 

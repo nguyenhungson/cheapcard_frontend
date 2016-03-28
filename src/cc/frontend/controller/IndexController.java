@@ -67,8 +67,8 @@ public class IndexController extends HttpServlet {
         TemplateDataDictionary myDic = TemplateDictionary.create();
         Map<Integer, String> mapHTML = this.renderListItem();//1-the game,2-the dien thoai,3-nap tien game,4-nap tien dien thoai
         
-        String mobileTop = "<h1 class=\"msprt mlogo\"><a href=\"#\" title=\"\">Thegiare.vn</a></h1>"
-                + "<a class=\"mmenu\" href=\"#\"><span class=\"msprt micomenu\"></span></a>";
+        String mobileTop = "<h1 class=\"msprt mlogo\"><a href=\"/\" title=\"\">Thegiare.vn</a></h1>"
+                + "<a class=\"mmenu sb-toggle-left\" href=\"javascript:;\"><span class=\"msprt micomenu\"></span></a>";
         
         if (mapHTML.get(2) != null && !mapHTML.get(2).equals("")) {
             myDic.setVariable("list_mobile_card", mapHTML.get(2));

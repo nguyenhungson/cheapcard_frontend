@@ -70,13 +70,20 @@ public class PaymentController extends HttpServlet {
         String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
         TemplateDataDictionary myDic = TemplateDictionary.create();
         String mainContent = "";
+
+        String mobileTop = "";
+
         if (pathInfo.equals("/banthe") || pathInfo.equals("/naptiengame")) {
             if (this.checkURL(req, pathInfo) == 1) {
+                String strTitle = "";
                 if (pathInfo.equals("/banthe")) {
-                    myDic.setVariable("title", "Mua mã thẻ");
+                    strTitle = "Mua mã thẻ";
+
                 } else {
-                    myDic.setVariable("title", "Nạp tiền game");
+                    strTitle = "Nạp tiền game";
                 }
+                myDic.setVariable("title", strTitle);
+                mobileTop = "<a class=\"mmenu\" href=\"javascript:;\" onclick=\"backChoose();\"><span class=\"msprt micoback\"></span>" + strTitle + "</a>";
 
                 if (req.getParameter("t") != null) {
                     int intAmount = Integer.parseInt(req.getParameter("t"));
@@ -107,12 +114,13 @@ public class PaymentController extends HttpServlet {
                     isGetCard = 1;
                     myDic.setVariable("title", "Mua mã thẻ");
                 }
+                mobileTop = "<a class=\"mmenu\" href=\"/\"><span class=\"msprt micoback\"></span>Về trang chủ</a>";
 
-                String info = "<strong style=\"color:red\">Giao dịch thất bại</strong>";
+                String info = "FAIL";
                 if (rescode.equals("1") && status.equals("1")) {
                     //call check status
                     String checkStatus = APISale.checkStatus(transId, isGetCard);
-                    info = "<strong style=\"color:green\">Giao dịch thành công</strong>";
+                    info = "SUCCESS";
                     if (type.equals("card")) {
                         ResponseCheckStatus responseAPI = gson.fromJson(checkStatus, ResponseCheckStatus.class);
                         int rspCode = responseAPI.getCode();
@@ -128,41 +136,49 @@ public class PaymentController extends HttpServlet {
                             String htmlCard = "";
                             OrderStatusResp orderResp = responseAPI.getData();
                             List<OrderDetail> listDetail = orderResp.getDetails();
+                            int indexCard = 0;
                             for (OrderDetail detailItem : listDetail) {
                                 supplier = detailItem.getSupplier();
                                 List<OrderData> cardData = detailItem.getData();
                                 for (OrderData item : cardData) {
-                                    htmlCard += "<tr>"
-                                            + "<td class=\"boxcard\">"
-                                            + "<a class=\"imgcard card" + detailItem.getUnitPrice() / 1000 + "k\" href=\"javascript:;\"><span class=\"sprtcard logocard " + detailItem.getSupplier() + "\"></span><em>" + Utils.formatNumber(detailItem.getUnitPrice()) + " <i>VNĐ</i></em></a>"
+                                    htmlCard += "<div class=\"rowcard result clearfix\">"
+                                            + "<div class=\"boxcard fl\" style=\"display:block\">"
+                                            + "<a class=\"imgcard card" + detailItem.getUnitPrice() / 1000 + "k sel\" href=\"javascript:;\">"
+                                            + "<span class=\"msprt micocard list " + detailItem.getSupplier() + "\"></span>"
+                                            + "<em>" + Utils.formatNumber(detailItem.getUnitPrice()) + " <i>VNĐ</i></em>"
+                                            + "</a>"
                                             + "<input type=\"hidden\" value=\"" + detailItem.getSupplier().toUpperCase() + " " + Utils.formatNumber(detailItem.getUnitPrice()) + "VNĐ - Serial:" + item.getSerial() + " - Mã nạp tiền:" + item.getCode() + "\" />"
                                             + "<input type=\"hidden\" value=\"" + detailItem.getSupplier().toUpperCase() + "|" + Utils.formatNumber(detailItem.getUnitPrice()) + "|" + item.getSerial() + "|" + item.getCode() + "\" />"
-                                            + "</td>"
-                                            + "<td class=\"colseri\">" + item.getSerial() + "</td>"
-                                            + "<td class=\"colcode\">" + item.getCode() + "</td>"
-                                            + "<td class=\"colbtn\"><a class=\"btnaction\" href=\"javascript:;\">Copy mã thẻ</a></td>"
-                                            + "</tr>";
+                                            + "</div>"
+                                            + "<div class=\"colseri fl\"><span>Số seri: &nbsp;</span>" + item.getSerial() + "</div>"
+                                            + "<div class=\"colcode fl\"><span>Mã thẻ: &nbsp;</span>" + item.getCode() + "</div>"
+                                            + "<div class=\"colbtn fl\"><a class=\"btnaction copy-" + indexCard + "\" href=\"javascript:;\">Copy mã thẻ</a></div>"
+                                            + "</div>";
+                                    indexCard++;
                                 }
                             }
-                            
+
                             myDic.setVariable("list_card", htmlCard);
                             myDic.showSection("CARD");
                         }
-                    } 
+                    }
+                } else {
+                    myDic.showSection("OTHER");
                 }
-                
+                myDic.showSection(info);
+
                 //Show bang gia
-                if(supplier.equals("")){
+                if (supplier.equals("")) {
                     Cookie cookies[] = req.getCookies();
-                    for(Cookie cookieItem : cookies){
-                        if(cookieItem.getName().equals("supplier")){
+                    for (Cookie cookieItem : cookies) {
+                        if (cookieItem.getName().equals("supplier")) {
                             supplier = cookieItem.getValue();
                             break;
                         }
                     }
                 }
-                
-                if (type.equals("card")) {                    
+
+                if (type.equals("card")) {
                     Map<Integer, Item> mapListItem = BusinessProcess.getListItem();
                     Iterator it = mapListItem.entrySet().iterator();
                     int typeId = 0;
@@ -181,13 +197,11 @@ public class PaymentController extends HttpServlet {
                     }
                     myDic.setVariable(supplier + "_current", "class=\"current\"");
                     myDic.setVariable("list_price_card", BusinessProcess.renderListPriceCard(mapListItem, typeId, supplier));
-                }
-                else{
+                } else {
                     myDic.showSection("OTHER");
                     myDic.showSection("ZINGXU");
                     myDic.setVariable("list_price_zx", BusinessProcess.renderListPriceZX());
                 }
-                
 
                 myDic.setVariable("status", info);
                 myDic.setVariable("order_no", transId);
@@ -202,6 +216,7 @@ public class PaymentController extends HttpServlet {
             mainContent = Utils.render404Page(myDic);
         }
 
+        myDic.setVariable("mobile_top", mobileTop);
         String content = Utils.renderTemplateMasterpage(mainContent, myDic);
         return content;
     }

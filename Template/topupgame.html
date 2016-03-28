@@ -16,23 +16,25 @@
                 </div>
                 <div class="row">
                     <span class="row_st">Mệnh giá</span>
-                    <span class="row_nd">
-                        <select id="pricezx" onchange="calTotalAmountZX();">
+                    <span class="row_all">
+                        <ul class="selprice" id="listPriceZX">
                             {{list_zx}}
-                        </select>
+                        </ul>
                     </span>
                     <span class="row_rd">&nbsp;</span>
                 </div>
                 <div class="row">
                     <span class="row_st">Thanh toán</span>
-                    <span class="row_nd"><span><span id="totalAmount">{{total_amount}}</span> <em>VNĐ</em></span></span>
+                    <span class="row_money"><span><span id="totalAmount">{{total_amount}}</span> <em>VNĐ</em></span></span>
                     <span class="row_rd">&nbsp;</span>
                     <input type="hidden" id="zxPrice" value="{{zx_price}}" />
                 </div>
-                <div class="row ctnbtn">
+                <div class="row ctnbtn desktop">
                     <span class="row_st">&nbsp;</span>
                     <span class="row_nd"><a class="btnaction" href="javascript:;" onclick="acceptTopupGame();">Tiếp tục</a></span>
-                    <span class="row_rd">&nbsp;</span>
+                </div>
+                <div class="rowendtbl mobi">
+                    <a class="btnaction" href="javascript:;" onclick="acceptTopupGame('mobile');">Tiếp tục</a>
                 </div>
             </div>
         </div>

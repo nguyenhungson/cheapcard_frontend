@@ -32,8 +32,12 @@
         <ul class="clearfix" id="listBank">
             {{list_bank_pcc}}
         </ul>
-        <p class="ctnbtn">
+        <p class="ctnbtn salecard_desktop">
             <a href="javascript:;" onclick="acceptPayment();" class="btnaction">Thanh toán</a>
+            <a href="javascript:;" class="btncancel" onclick="backChoose();">Quay lại</a>
+        </p>
+        <p class="ctnbtn salecard_mobile">
+            <a href="javascript:;" onclick="acceptPayment('mobile');" class="btnaction">Thanh toán</a>
             <a href="javascript:;" class="btncancel" onclick="backChoose();">Quay lại</a>
         </p>
     </div>

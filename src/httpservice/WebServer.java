@@ -9,9 +9,11 @@ import cc.frontend.controller.TopupGameController;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 /**
@@ -46,34 +48,45 @@ public class WebServer extends Thread {
         }
         logger_.info("get rest listen_port from zport=" + port);
 
-        Server server = new Server();
-
         QueuedThreadPool threadPool = new QueuedThreadPool();
         threadPool.setMaxThreads(max_threads);
         threadPool.setMinThreads(min_threads);
-        server.setThreadPool(threadPool);
+        Server server = new Server(threadPool);
 
-        SelectChannelConnector connector = new SelectChannelConnector();
+        ServerConnector connector = new ServerConnector(server);
         connector.setPort(port);
-        connector.setMaxIdleTime(60000);
-        connector.setStatsOn(false);
-        connector.setLowResourcesConnections(20000);
-        connector.setLowResourcesMaxIdleTime(5000);
-        connector.setAcceptors(acceptors);
+        connector.setIdleTimeout(60000);
         server.setConnectors(new Connector[]{connector});
+        
+        ServletHandler handler = new ServletHandler();
 
-        ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        handler.setSessionHandler(new SessionHandler());
+        //viewer servlet
+        ServletHolder holderSelling = handler.addServletWithMapping(SaleCardController.class, "/banthe/*");
+        holderSelling.setAsyncSupported(true);
+        ServletHolder holderPay = handler.addServletWithMapping(PaymentController.class, "/thanhtoan/*");
+        holderPay.setAsyncSupported(true);
+        ServletHolder holderTopup = handler.addServletWithMapping(TopupGameController.class, "/naptiengame/*");
+        holderTopup.setAsyncSupported(true);
+        ServletHolder holderInfo = handler.addServletWithMapping(InfoController.class, "/thongtin/*");
+        holderInfo.setAsyncSupported(true);
+        ServletHolder holderHome = handler.addServletWithMapping(IndexController.class, "/");
+        holderHome.setAsyncSupported(true);
+
+        //ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         server.setHandler(handler);
 
-        handler.addServlet(SaleCardController.class, "/banthe/*");
+        /*handler.addServlet(SaleCardController.class, "/banthe/*");
         handler.addServlet(PaymentController.class, "/thanhtoan/*");
         handler.addServlet(TopupGameController.class, "/naptiengame/*");
         handler.addServlet(InfoController.class, "/thongtin/*");
-        handler.addServlet(IndexController.class, "/");
+        handler.addServlet(IndexController.class, "/");*/
 
         server.setStopAtShutdown(true);
-        server.setSendServerVersion(true);
+        server.setStopTimeout(1000);// force stop after 1s
+
+        ShutdownThread obj = new ShutdownThread(server);
+        Runtime.getRuntime().addShutdownHook(obj);
+        
         server.start();
         server.join();
     }

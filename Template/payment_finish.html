@@ -2,45 +2,51 @@
     <div class="localpath"><a href="/">Trang chủ</a><span class="sprt icolocalpath"></span><a href="/">{{title}}</a></div>
     <div class="boxcontent clearfix">
         <div class="colfrist fl">
-            <div class="bxcontent card">
+            <div class="bxcontent card" style="border: none">
                 <div class="row">
-                    <span class="row_st">Trạng thái</span>
-                    <span class="row_nd">{{status}}</span>
+                    {{#SUCCESS}}
+                    <div class="bxnotify success">
+                        <span>Giao dịch hoàn thành! </span>Bạn đã mua thẻ thành công.
+                    </div>
+                    {{/SUCCESS}}
+                    {{#FAIL}}
+                    <div class="bxnotify fail">
+                        <span>Giao dịch không thành công! </span>Xin lỗi bạn vì sự bất tiện này, mời bạn quay lại sau.
+                    </div>
+                    {{/FAIL}}
                 </div>
-                <div class="row">
+                <div class="rowcard">
                     <span class="row_st">Mã giao dịch</span>
-                    <span class="row_st"><strong>{{order_no}}</strong></span>
-                    <span><em>(Vui lòng ghi nhớ Mã giao dịch để cung cấp cho chúng tôi khi cần)</em></span>
+                    <span class="row_nd"><strong>{{order_no}}</strong></span>
+                    <span class="row_rd"><em>(Vui lòng ghi nhớ Mã GD để cung cấp cho chúng tôi khi cần)</em></span>
                 </div>
-                <div class="row">
+                <div class="rowcard">
                     <span class="row_st">Ngày giao dịch</span>
                     <span class="row_nd"><strong>{{date_trans}}</strong></span>
                 </div>
-                <div class="row">
+                <div class="rowcard">
                     <span class="row_st">Tổng tiền</span>
                     <span class="row_nd"><strong style="color:red">{{total_amount}} VNĐ</strong></span>
                 </div>
                 {{#CARD}}
-                <table class="result" width="100%" border="0" cellspacing="0" cellpadding="10" id="tableCards">
-                    <thead>
-                        <tr>
-                            <th>Loại thẻ</th>
-                            <th>Số seri</th>
-                            <th>Mã thẻ</th>
-                            <th>&nbsp;</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{list_card}}
-                        <tr>
-                            <td class="colbtn" colspan="4" style="text-align: center">
-                                <a class="btnaction" href="javascript:;" onclick="exportExcelCard();">Xuất Exel</a>
-                                <a class="btnaction" href="javascript:;" id="copyAll">Copy mã thẻ</a>
-                                <a class="btnaction" href="/">Tiếp tục mua hàng</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="rowcard title clearfix">
+                    <div class="boxcard fl">Loại thẻ</div>
+                    <div class="colseri fl">Số seri</div>
+                    <div class="colcode fl">Mã thẻ</div>
+                </div>
+                <div id="tableCards">
+                    {{list_card}}
+                </div>
+                <div class="rowcard salecard_desktop" style="text-align: center">
+                    <a class="btnaction" href="javascript:;" onclick="exportExcelCard();">Xuất Excel</a>
+                    <a class="btnaction" href="javascript:;" id="copyDesktop">Copy mã thẻ</a>
+                    <a class="btnaction" href="/">Tiếp tục mua hàng</a>
+                </div>
+                <div class="rowresultend mobi" align="center">
+                    <a class="btnaction" href="javascript:;" id="sendEmail">Gửi mail</a>
+                    <a class="btnaction" href="javascript:;" id="sendSMS">Gửi SMS</a>
+                    <a class="btnaction" href="javascript:;" id="copyMobile">Copy mã thẻ</a>
+                </div>
                 <form action="/thanhtoan/xuatexcel.html" method="post" id="formExportExcel">
                     <input type="hidden" name="dataExcel" value="" />
                 </form>
