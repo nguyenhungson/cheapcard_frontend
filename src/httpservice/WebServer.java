@@ -59,7 +59,10 @@ public class WebServer extends Thread {
         server.setConnectors(new Connector[]{connector});
         
         ServletHandler handler = new ServletHandler();
-
+//        connector.setStatsOn(false);
+//        connector.setLowResourcesConnections(20000);
+//        connector.setLowResourcesMaxIdleTime(5000);
+//        connector.setAcceptors(acceptors);
         //viewer servlet
         ServletHolder holderSelling = handler.addServletWithMapping(SaleCardController.class, "/banthe/*");
         holderSelling.setAsyncSupported(true);
@@ -74,15 +77,7 @@ public class WebServer extends Thread {
 
         //ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         server.setHandler(handler);
-
-        /*handler.addServlet(SaleCardController.class, "/banthe/*");
-        handler.addServlet(PaymentController.class, "/thanhtoan/*");
-        handler.addServlet(TopupGameController.class, "/naptiengame/*");
-        handler.addServlet(InfoController.class, "/thongtin/*");
-        handler.addServlet(IndexController.class, "/");*/
-
-        server.setStopAtShutdown(true);
-        server.setStopTimeout(1000);// force stop after 1s
+        server.setStopTimeout(1000);
 
         ShutdownThread obj = new ShutdownThread(server);
         Runtime.getRuntime().addShutdownHook(obj);
